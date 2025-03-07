@@ -1,9 +1,10 @@
 <?php
 
 namespace App\Models;
-
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 
 class Discount extends Model
 {
@@ -19,4 +20,10 @@ class Discount extends Model
     {
         return $this->belongsToMany(Product::class);
     }
+    protected static function booted()
+    {
+    static::addGlobalScope('valid', function (Builder $builder) {
+        $builder->where('end_date', '>=', Carbon::now());
+    });
+}
 }

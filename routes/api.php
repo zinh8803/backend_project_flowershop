@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\DiscountController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\RoleUserController;
@@ -48,3 +49,8 @@ Route::get('/products/{id}', [ProductController::class, 'show']);
 Route::post('/products', [ProductController::class, 'store']);
 Route::post('/products/{id}', [ProductController::class, 'update']);
 Route::delete('/products/{id}', [ProductController::class, 'destroy']);
+
+Route::get('/discounts', [DiscountController::class, 'index']);
+Route::post('/discounts', [DiscountController::class, 'store']);
+Route::post('/discounts/{id}', [DiscountController::class, 'update']);
+Route::delete('/discounts/{id}', [DiscountController::class, 'destroy']);
