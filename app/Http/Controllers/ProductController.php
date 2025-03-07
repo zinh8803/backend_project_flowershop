@@ -87,7 +87,7 @@ class ProductController extends Controller
             'status' => 200,
             'message' => 'Lấy danh sách sản phẩm thành công',
             'data' => ProductResource::collection($products),
-            'errors' => null
+           
         ],200);
     }
     
@@ -179,7 +179,7 @@ public function show($id)
         return response()->json([
             'status' => 404,
             'message' => 'Product not found',
-            'errors' => null,
+
         ], 404);
     }
 
@@ -250,9 +250,17 @@ public function show($id)
 
      
 
- public function update(Request $request, Product $product)
+ public function update(Request $request, $id)
 {
-    // Validate dữ liệu
+    $product = Product::find($id);
+
+    if (!$product) {
+        return response()->json([
+            'status' => 404,
+            'message' => 'Product not found',
+        ], 404);
+    }
+
     $validatedData = $request->validate([
         'name' => 'sometimes|required|max:255',
         'description' => 'sometimes|required',
@@ -261,7 +269,6 @@ public function show($id)
         'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
     ]);
 
-    // Nếu có ảnh thì xử lý upload
     if ($request->hasFile('image')) {
         $image = $request->file('image');
         $imageName = time() . '.' . $image->getClientOriginalExtension();
@@ -269,15 +276,16 @@ public function show($id)
         $validatedData['image_url'] = 'assets/images/' . $imageName;
     }
 
-    // Cập nhật sản phẩm với dữ liệu hợp lệ
     $product->update($validatedData);
 
     return response()->json([
         'status' => 200,
         'message' => 'Product updated successfully',
         'data' => new ProductResource($product),
-    ]);
+    ], 200);
 }
+
+
 
  
     /**
@@ -320,24 +328,22 @@ public function show($id)
  * )
  */
 
-    public function destroy(Product $product)
-    {
-        if (!$product) {
-            return response()->json([
-                'status' => 404,
-                'message' => 'Không tìm thấy sản phẩm',
-                'data' => null,
-                'errors' => null
-            ], 404);
-        }
-    
-        $product->delete();
-    
+ public function destroy($id)
+{
+    $product = Product::find($id);
+
+    if (!$product) {
         return response()->json([
-            'status' => 200,
-            'message' => 'Xóa sản phẩm thành công',
-            'data' => null,
-            'errors' => null
-        ], 200);
+            'status' => 404,
+            'message' => 'Không tìm thấy sản phẩm',
+        ], 404);
     }
+
+    $product->delete();
+
+    return response()->json([
+        'status' => 200,
+        'message' => 'Xóa sản phẩm thành công',
+    ], 200);
+}
 }
