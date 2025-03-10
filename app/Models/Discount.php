@@ -16,10 +16,10 @@ class Discount extends Model
         return $this->hasMany(Order::class);
     }
 
-    public function products()
-    {
-        return $this->belongsToMany(Product::class);
-    }
+    // public function products()
+    // {
+    //     return $this->belongsToMany(Product::class);
+    // }
     protected static function booted()
     {
     static::addGlobalScope('valid', function (Builder $builder) {

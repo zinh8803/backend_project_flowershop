@@ -2,10 +2,13 @@
 
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DiscountController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProductDiscountController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\RoleUserController;
 use App\Http\Controllers\UserController;
+use App\Models\ProductDiscount;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use L5Swagger\Http\Controllers\SwaggerController;
@@ -54,3 +57,14 @@ Route::get('/discounts', [DiscountController::class, 'index']);
 Route::post('/discounts', [DiscountController::class, 'store']);
 Route::post('/discounts/{id}', [DiscountController::class, 'update']);
 Route::delete('/discounts/{id}', [DiscountController::class, 'destroy']);
+
+Route::get('product-discounts', [ProductDiscountController::class, 'index']);
+Route::post('product-discounts', [ProductDiscountController::class, 'store']);
+Route::post('product-discounts/{id}', [ProductDiscountController::class, 'update']);
+Route::delete('product-discounts/{id}', [ProductDiscountController::class, 'destroy']);
+
+Route::get('/Order', [OrderController::class, 'index']);
+Route::get('/Order/{id}', [OrderController::class, 'show']);
+Route::post('/Order', [OrderController::class, 'store']);
+Route::put('/Order/{id}/status', [OrderController::class, 'updateStatus']);
+Route::delete('/Order/{id}', [OrderController::class, 'destroy']);

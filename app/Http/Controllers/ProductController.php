@@ -90,7 +90,29 @@ class ProductController extends Controller
            
         ],200);
     }
-    
+//     public function index()
+// {
+//     $products = Product::with('category', 'discount')->get()->map(function ($product) {
+//         return [
+//             'id' => $product->id,
+//             'name' => $product->name,
+//             'description' => $product->description,
+//             'price' => $product->price,
+//             'final_price' => $product->final_price, // Gọi accessor tính giá giảm
+//             'is_discounted' => $product->final_price < $product->price, // Kiểm tra có giảm giá không
+//             'category' => $product->category->name ?? null,
+//             'image_url' => $product->image_url,
+//         ];
+//     });
+
+//     return response()->json([
+//         'status' => 'success',
+//         'message' => 'Lấy danh sách sản phẩm thành công',
+//         'data' => $products,
+//         'errors' => null
+//     ]);
+// }
+
 
     /**
      * Show the form for creating a new resource.

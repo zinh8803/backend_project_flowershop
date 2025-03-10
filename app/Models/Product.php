@@ -19,9 +19,23 @@ class Product extends Model
     {
         return $this->belongsToMany(Order::class)->withPivot('quantity', 'price');
     }
-
-    public function discounts()
+    public function discount()
     {
-        return $this->belongsToMany(Discount::class);
+        return $this->hasOne(ProductDiscount::class, 'product_id');
+    }
+    public function getFinalPriceAttribute()
+    {
+        $currentDate = now();
+
+        $discount = $this->discount()
+            ->where('start_date', '<=', $currentDate)
+            ->where('end_date', '>=', $currentDate)
+            ->first();
+
+        if ($discount) {
+            return $this->price * (1 - $discount->percentage / 100);
+        }
+
+        return $this->price; 
     }
 }

@@ -17,11 +17,27 @@ class Order extends Model
 
     public function products()
     {
-        return $this->belongsToMany(Product::class)->withPivot('quantity', 'price');
+        return $this->belongsToMany(Product::class,'order_items')->withPivot('quantity', 'price');
     }
+   public function orderItems()
+{
+    return $this->hasMany(OrderItem::class, 'order_id');
+}
 
     public function discount()
     {
         return $this->belongsTo(Discount::class);
+    }
+    public function getFinalTotalPriceAttribute()
+    {
+    $total = $this->orderItems->sum(function ($item) {
+        return $item->final_price * $item->quantity;
+    });
+
+    if ($this->discount) {
+        $total *= (1 - $this->discount->percentage / 100);
+    }
+
+    return round($total, 2);
     }
 }

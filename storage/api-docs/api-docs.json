@@ -762,6 +762,132 @@
                 }
             }
         },
+        "/api/Order": {
+            "get": {
+                "tags": [
+                    "Order"
+                ],
+                "summary": "Lấy danh don hang",
+                "operationId": "66aa10057ba2eb14efeb0482375eaeac",
+                "responses": {
+                    "200": {
+                        "description": "Danh sách don hang"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Order"
+                ],
+                "summary": "Tạo đơn hàng",
+                "operationId": "c6dd0a211feb1f0d05d6d4889c281ee2",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "properties": {
+                                    "user_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "discount_id": {
+                                        "type": "integer",
+                                        "example": 2,
+                                        "nullable": true
+                                    },
+                                    "products[0][product_id]": {
+                                        "type": "integer",
+                                        "example": 3
+                                    },
+                                    "products[0][quantity]": {
+                                        "type": "integer",
+                                        "example": 2
+                                    },
+                                    "products[1][product_id]": {
+                                        "type": "integer",
+                                        "example": 5
+                                    },
+                                    "products[1][quantity]": {
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Đơn hàng được tạo thành công",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Tạo đơn hàng thành công"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Lỗi dữ liệu đầu vào"
+                    }
+                }
+            }
+        },
+        "/api/Order/{id}/status": {
+            "put": {
+                "tags": [
+                    "Order"
+                ],
+                "summary": "Cập nhật trạng thái đơn hàng",
+                "operationId": "6bd647b4b3270e74ee9c6c4b9086d8e7",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "status": {
+                                        "type": "string",
+                                        "example": "completed"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Cập nhật thành công"
+                    }
+                }
+            }
+        },
         "/api/products": {
             "get": {
                 "tags": [
@@ -1117,6 +1243,303 @@
                                         },
                                         "errors": {
                                             "type": "null"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/product-discounts": {
+            "get": {
+                "tags": [
+                    "Products-discount"
+                ],
+                "summary": "Lấy danh sách giam gia",
+                "operationId": "922c717438e480da0c66978cd2f4e1e2",
+                "responses": {
+                    "200": {
+                        "description": "Danh sách giam gia"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Products-discount"
+                ],
+                "summary": "Tạo giảm giá cho sản phẩm",
+                "description": "API giúp admin thêm giảm giá cho một sản phẩm trong khoảng thời gian cụ thể",
+                "operationId": "6a7d0ed4cf1d5d9c3ec706a5a95d3908",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "product_id",
+                                    "percentage",
+                                    "start_date",
+                                    "end_date"
+                                ],
+                                "properties": {
+                                    "product_id": {
+                                        "description": "ID của sản phẩm",
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "percentage": {
+                                        "description": "Phần trăm giảm giá",
+                                        "type": "integer",
+                                        "example": 20
+                                    },
+                                    "start_date": {
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "example": "2025-03-15 10:00:00"
+                                    },
+                                    "end_date": {
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "example": "2025-03-15 12:00:00"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Giảm giá được tạo thành công",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Discount created"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "product_id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "percentage": {
+                                                    "type": "integer",
+                                                    "example": 20
+                                                },
+                                                "start_date": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "example": "2025-03-15 10:00:00"
+                                                },
+                                                "end_date": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "example": "2025-03-15 12:00:00"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Dữ liệu không hợp lệ",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 422
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Validation Error"
+                                        },
+                                        "errors": {
+                                            "properties": {
+                                                "product_id": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "example": "The product_id field is required."
+                                                    }
+                                                },
+                                                "percentage": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "example": "The percentage must be a number."
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/product-discounts/{id}": {
+            "post": {
+                "tags": [
+                    "Products-discount"
+                ],
+                "summary": "Cập nhật giảm giá cho sản phẩm",
+                "description": "API giúp admin chỉnh sửa thông tin giảm giá của sản phẩm",
+                "operationId": "85fdee257b0991681f93f777f1192696",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID của giảm giá cần cập nhật",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "product_id",
+                                    "percentage",
+                                    "start_date",
+                                    "end_date"
+                                ],
+                                "properties": {
+                                    "product_id": {
+                                        "description": "ID của sản phẩm",
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "percentage": {
+                                        "description": "Phần trăm giảm giá",
+                                        "type": "integer",
+                                        "example": 30
+                                    },
+                                    "start_date": {
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "example": "2025-03-20 09:00:00"
+                                    },
+                                    "end_date": {
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "example": "2025-03-20 11:00:00"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Cập nhật giảm giá thành công",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Discount updated"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "product_id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "percentage": {
+                                                    "type": "integer",
+                                                    "example": 30
+                                                },
+                                                "start_date": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "example": "2025-03-20 09:00:00"
+                                                },
+                                                "end_date": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "example": "2025-03-20 11:00:00"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Products-discount"
+                ],
+                "summary": "Xóa giảm giá của sản phẩm",
+                "description": "API giúp admin xóa giảm giá của sản phẩm",
+                "operationId": "75ecb06bd2b5f1376374cfe6cd502cb6",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID của giảm giá cần xóa",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Xóa giảm giá thành công",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Discount deleted"
                                         }
                                     },
                                     "type": "object"
@@ -1615,8 +2038,16 @@
             "description": "Discounts"
         },
         {
+            "name": "Order",
+            "description": "Order"
+        },
+        {
             "name": "Products",
             "description": "Products"
+        },
+        {
+            "name": "Products-discount",
+            "description": "Products-discount"
         },
         {
             "name": "users",
