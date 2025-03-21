@@ -1,6 +1,11 @@
 sau khi clone về
 
+nhập composer i để tải thư viện
+
 sửa file .env.example -> .env 
+php artisan key:generate : để lấy key
+
+
 đổi tên database
 
 chạy lần lược 
