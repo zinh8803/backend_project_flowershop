@@ -21,6 +21,10 @@ class UserResource extends JsonResource
             'password' => $this->password,
             'avatar' => asset($this->avatar),
             'role' => $this->role,
+            'phone_number' => $this->phone_number,
+            'address' => $this->address,
+            'is_logged_in' => $this->is_logged_in,
+            'last_login_at' => $this->last_login_at,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

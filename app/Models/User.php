@@ -23,6 +23,10 @@ class User extends Authenticatable
         'password',
         'avatar',
         'role',
+        'phone_number',
+        'address',
+        'is_logged_in',
+        'last_login_at',
     ];
 
     public function orders()
