@@ -54,6 +54,7 @@ class CategoryController extends Controller
      *     summary="Thêm danh mục mới",
      *    
      *     tags={"categories"},
+     *     security={ {"bearerAuth":{}} }, 
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\MediaType(
@@ -187,6 +188,7 @@ class CategoryController extends Controller
  *     summary="Cập nhật sản phẩm",
  *     description="API cập nhật sản phẩm, hỗ trợ upload ảnh",
  *     tags={"categories"},
+ *    security={ {"bearerAuth":{}} },
  *     @OA\Parameter(
  *         name="id",
  *         in="path",
@@ -264,6 +266,7 @@ class CategoryController extends Controller
  *     summary="Xóa sản phẩm",
  *     description="API để xóa một sản phẩm khỏi hệ thống.",
  *     tags={"categories"},
+ *    security={ {"bearerAuth":{}} },
  *     @OA\Parameter(
  *         name="id",
  *         in="path",

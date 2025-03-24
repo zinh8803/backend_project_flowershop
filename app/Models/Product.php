@@ -23,6 +23,10 @@ class Product extends Model
     {
         return $this->hasOne(ProductDiscount::class, 'product_id');
     }
+    public function employees()
+    {   
+    return $this->belongsToMany(Employee::class, 'employee_product');
+    }
     public function getFinalPriceAttribute()
     {
         $currentDate = now();

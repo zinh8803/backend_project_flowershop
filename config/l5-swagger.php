@@ -217,19 +217,9 @@ return [
                 */
             ],
             'security' => [
-                /*
-                 * Examples of Securities
-                 */
                 [
-                    /*
-                    'oauth2_security_example' => [
-                        'read',
-                        'write'
-                    ],
-
-                    'passport' => []
-                    */
-                ],
+                    'bearerAuth' => []
+                ]
             ],
         ],
 

@@ -28,6 +28,7 @@ use Illuminate\Support\Facades\Validator;
      *     summary="Thêm sản phẩm mới",
      *     description="API để thêm sản phẩm mới với thông tin chi tiết và upload ảnh",
      *     tags={"Products"},
+     *     security={ {"bearerAuth":{}} }, 
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\MediaType(
@@ -230,6 +231,7 @@ public function show($id)
  *     summary="Cập nhật sản phẩm",
  *     description="API cập nhật sản phẩm, hỗ trợ upload ảnh",
  *     tags={"Products"},
+ *     security={ {"bearerAuth":{}} },
  *     @OA\Parameter(
  *         name="id",
  *         in="path",
@@ -320,6 +322,7 @@ public function show($id)
  *     summary="Xóa sản phẩm",
  *     description="API để xóa một sản phẩm khỏi hệ thống.",
  *     tags={"Products"},
+ *    security={ {"bearerAuth":{}} },
  *     @OA\Parameter(
  *         name="id",
  *         in="path",

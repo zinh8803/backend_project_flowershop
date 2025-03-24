@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\UserResource;
-use App\Models\Role_User;
 use Illuminate\Validation\Rule;
 
 use App\Models\User;
@@ -178,7 +177,7 @@ class UserController extends Controller
             'last_login_at' => now()
         ]);
 
-        $token = $user->createToken('API Token')->plainTextToken;
+        $token = $user->createToken('User token')->plainTextToken;
 
         return response()->json([
             'status' => 200,
@@ -288,7 +287,6 @@ class UserController extends Controller
  *             @OA\Property(property="name", type="string", example="Nguyễn Văn A"),
  *             @OA\Property(property="email", type="string", format="email", example="nguyenvana@example.com"),
  *             @OA\Property(property="password", type="string", example="123456"),
- *             @OA\Property(property="role", type="string", example="admin")
  *         )
  *     ),
  *     @OA\Response(
@@ -318,7 +316,8 @@ public function update(Request $request, $id)
             Rule::unique('users')->ignore($id),
         ],
         'password' => 'sometimes|required|min:6',
-        'role' => 'sometimes|required|string'
+        'address' => 'sometimes|nullable|string',
+        'phone_number' => 'sometimes|nullable|string',
     ]);
 
     if ($request->has('password')) {

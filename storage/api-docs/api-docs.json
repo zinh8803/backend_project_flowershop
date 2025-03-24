@@ -762,6 +762,140 @@
                 }
             }
         },
+        "/api/employees": {
+            "get": {
+                "tags": [
+                    "Employees"
+                ],
+                "summary": "Lấy danh sách nhân viên",
+                "operationId": "7fc06f144c1cd7925c5c391a6609f02d",
+                "responses": {
+                    "200": {
+                        "description": "Danh sách nhân viên"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/employees/register": {
+            "post": {
+                "tags": [
+                    "Employees"
+                ],
+                "summary": "Thêm nhân viên mới",
+                "operationId": "c7d352977e9e289946e2d3aed31de018",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "email",
+                                    "password",
+                                    "position_id"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "John Doe"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "john@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "123456"
+                                    },
+                                    "address": {
+                                        "type": "string",
+                                        "example": "123 Street"
+                                    },
+                                    "phone_number": {
+                                        "type": "string",
+                                        "example": "0123456789"
+                                    },
+                                    "position_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Nhân viên được tạo thành công",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Employee created successfully"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "John Doe"
+                                                },
+                                                "email": {
+                                                    "type": "string",
+                                                    "format": "email",
+                                                    "example": "john@example.com"
+                                                },
+                                                "address": {
+                                                    "type": "string",
+                                                    "example": "123 Street"
+                                                },
+                                                "phone_number": {
+                                                    "type": "string",
+                                                    "example": "0123456789"
+                                                },
+                                                "created_at": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "example": "2025-03-24 10:00:00"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "token": {
+                                            "type": "string",
+                                            "example": "xyz123abc456"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/Order": {
             "get": {
                 "tags": [
@@ -884,6 +1018,55 @@
                 "responses": {
                     "200": {
                         "description": "Cập nhật thành công"
+                    }
+                }
+            }
+        },
+        "/api/positions": {
+            "get": {
+                "tags": [
+                    "Positions"
+                ],
+                "summary": "Lấy danh sách vị trí",
+                "operationId": "979e46c0161e2570ef5478434095cb31",
+                "responses": {
+                    "200": {
+                        "description": "Danh sách vị trí"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Positions"
+                ],
+                "summary": "Thêm mới vị trí",
+                "operationId": "8b47544f5112eedfa8e15bfa7d23ba46",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Quản lý"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "Quản lý chung"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Vị trí đã được tạo"
                     }
                 }
             }
@@ -1946,10 +2129,6 @@
                                     "password": {
                                         "type": "string",
                                         "example": "123456"
-                                    },
-                                    "role": {
-                                        "type": "string",
-                                        "example": "admin"
                                     }
                                 },
                                 "type": "object"
@@ -2091,6 +2270,13 @@
                 },
                 "type": "object"
             }
+        },
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            }
         }
     },
     "tags": [
@@ -2103,8 +2289,16 @@
             "description": "Discounts"
         },
         {
+            "name": "Employees",
+            "description": "Employees"
+        },
+        {
             "name": "Order",
             "description": "Order"
+        },
+        {
+            "name": "Positions",
+            "description": "Positions"
         },
         {
             "name": "Products",
@@ -2117,6 +2311,11 @@
         {
             "name": "users",
             "description": "users"
+        }
+    ],
+    "security": [
+        {
+            "bearerAuth": []
         }
     ]
 }

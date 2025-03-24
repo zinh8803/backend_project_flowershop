@@ -14,4 +14,9 @@ class Category extends Model
     {
         return $this->hasMany(Product::class);
     }
+    public function employees()
+    {
+    return $this->belongsToMany(Employee::class, 'employee_category');
+    }
+
 }
