@@ -250,12 +250,8 @@ class UserController extends Controller
         ], 404);
     }
 
-    // Xóa tất cả token của user
     $user->tokens()->delete();
-
-    // Cập nhật trạng thái đăng xuất
     $user->update(['is_logged_in' => false]);
-
     return response()->json([
         'status' => 200,
         'message' => 'Logged out successfully'
