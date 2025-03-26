@@ -27,7 +27,7 @@ class EmployeeController extends Controller
     public function __construct()
     {
         $this->middleware('auth:sanctum')->except('register');
-        $this->middleware('check.employee');
+       // $this->middleware('check.employee');
     }
     /**
      * @OA\Get(

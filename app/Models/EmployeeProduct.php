@@ -10,5 +10,5 @@ class EmployeeProduct extends Model
     use HasFactory;
     protected $table = 'employee_product';
 
-    protected $fillable = ['employee_id', 'product_id'];
+    protected $fillable = ['employee_id', 'product_id','action'];
 }

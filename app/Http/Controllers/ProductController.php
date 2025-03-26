@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\BaseResource;
 use App\Http\Resources\ProductResource;
+use App\Models\EmployeeProduct;
 use App\Models\Product;
 
 use Illuminate\Validation\ValidationException;
@@ -38,7 +39,9 @@ use Illuminate\Support\Facades\Validator;
      *                 @OA\Property(property="name", type="string", example="Hoa Hồng"),
      *                 @OA\Property(property="description", type="string", example="Hoa hồng đỏ đẹp"),
      *                 @OA\Property(property="price", type="number", format="float", example=150000),
+     *                @OA\Property(property="stock", type="number", format="integer", example=100),
      *                 @OA\Property(property="category_id", type="integer", example=1),
+     *                @OA\Property(property="employee_id", type="integer", example=1),
      *                 @OA\Property(property="image", type="string", format="binary"),
      *             )
      *         )
@@ -54,6 +57,7 @@ use Illuminate\Support\Facades\Validator;
      *                 @OA\Property(property="name", type="string", example="Hoa Hồng"),
      *                 @OA\Property(property="description", type="string", example="Hoa hồng đỏ đẹp"),
      *                 @OA\Property(property="price", type="number", format="float", example=150000),
+     *                @OA\Property(property="stock", type="number", format="integer", example=100),
      *                 @OA\Property(property="category_id", type="integer", example=1),
      *                 @OA\Property(property="image_url", type="string", example="assets/images/hoahong.jpg"),
      *             ),
@@ -132,7 +136,9 @@ class ProductController extends Controller
             'name' => 'required|unique:products|max:255',
             'description' => 'required',
             'price' => 'required|numeric',
+            'stock' => 'required|numeric',
             'category_id' => 'required|exists:categories,id',
+            'employee_id' => 'required|nullable|exists:employees,id',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', 
         ]);
     
@@ -144,7 +150,11 @@ class ProductController extends Controller
         }
     
         $product = Product::create($validatedData);
-    
+        EmployeeProduct::create([
+            'employee_id' => $request->employee_id,
+            'product_id' => $product->id,
+            'action' => 'create'
+        ]);
         return response()->json([
             'status' => 201,
             'message' => 'Product created successfully',
@@ -247,7 +257,9 @@ public function show($id)
  *                 @OA\Property(property="name", type="string", example="Hoa Hồng"),
  *                 @OA\Property(property="description", type="string", example="Hoa hồng đỏ đẹp"),
  *                 @OA\Property(property="price", type="number", format="float", example=150000),
+ *                @OA\Property(property="stock", type="number", format="integer", example=100),
  *                 @OA\Property(property="category_id", type="integer", example=1),
+ *                @OA\Property(property="employee_id", type="integer", example=1),
  *                 @OA\Property(property="image", type="string", format="binary", description="Ảnh sản phẩm (nếu có)"),
  *             )
  *         )
@@ -263,6 +275,7 @@ public function show($id)
  *                 @OA\Property(property="name", type="string", example="Hoa Hồng"),
  *                 @OA\Property(property="description", type="string", example="Hoa hồng đỏ đẹp"),
  *                 @OA\Property(property="price", type="number", format="float", example=150000),
+ *               @OA\Property(property="stock", type="number", format="integer", example=100),
  *                 @OA\Property(property="category_id", type="integer", example=1),
  *                 @OA\Property(property="image_url", type="string", example="assets/images/hoahong.jpg"),
  *             )
@@ -289,6 +302,7 @@ public function show($id)
         'name' => 'sometimes|required|max:255',
         'description' => 'sometimes|required',
         'price' => 'sometimes|required|numeric',
+        'stock' => 'sometimes|required|numeric',
         'category_id' => 'sometimes|required|exists:categories,id',
         'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
     ]);
@@ -300,6 +314,11 @@ public function show($id)
         $validatedData['image_url'] = 'assets/images/' . $imageName;
     }
 
+    EmployeeProduct::create([
+        'employee_id' => $request->employee_id,
+        'product_id' => $product->id,
+        'action' => 'update'
+    ]);
     $product->update($validatedData);
 
     return response()->json([

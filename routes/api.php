@@ -3,6 +3,7 @@
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DiscountController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\ProductController;
@@ -34,6 +35,10 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 
+
+Route::post('/categories', [CategoryController::class, 'store']);
+Route::post('/categories/{id}', [CategoryController::class, 'update']);
+Route::delete('/categories/{id}', [CategoryController::class, 'destroy']);
 
 Route::middleware(['auth:sanctum', 'check.user'])->put('/users/{id}', [UserController::class, 'update']);
 
@@ -81,16 +86,6 @@ Route::delete('/schedules/{id}', [ScheduleController::class, 'destroy']);
 Route::get('/employees/schedules/{employee_id}', [ScheduleController::class, 'show']);
 Route::post('/schedules/{id}', [ScheduleController::class, 'update']);
 
-Route::middleware(['auth:sanctum','check.employee'])->group(function () {
-
-Route::post('/products', [ProductController::class, 'store']);
-Route::post('/products/{id}', [ProductController::class, 'update']);
-Route::delete('/products/{id}', [ProductController::class, 'destroy']);
-
-
-Route::post('/categories', [CategoryController::class, 'store']);
-Route::post('/categories/{id}', [CategoryController::class, 'update']);
-Route::delete('/categories/{id}', [CategoryController::class, 'destroy']);
 
 Route::get('/positions', [PositionController::class, 'index']);
 Route::get('/positions/{id}', [PositionController::class, 'show']);
@@ -99,8 +94,28 @@ Route::put('/positions/{id}', [PositionController::class, 'update']);
 Route::delete('/positions/{id}', [PositionController::class, 'destroy']);
 
 
+Route::post('/products', [ProductController::class, 'store']);
+Route::post('/products/{id}', [ProductController::class, 'update']);
+Route::delete('/products/{id}', [ProductController::class, 'destroy']);
+Route::middleware(['auth:sanctum','check.employee'])->group(function () {
+
+
+
+
+
+
+
+
+
 
 Route::get('/employees', [EmployeeController::class, 'index']);
-Route::post('/employees/register', [EmployeeController::class, 'register']);
+
 
 });
+Route::post('/employees/register', [EmployeeController::class, 'register']);
+
+Route::get('/invoices', [InvoiceController::class, 'index']);
+Route::get('/invoices/{id}', [InvoiceController::class, 'show']);   
+Route::post('/invoices', [InvoiceController::class, 'store']);
+Route::put('/invoices/{id}', [InvoiceController::class, 'update']);
+Route::delete('/invoices/{id}', [InvoiceController::class, 'destroy']);

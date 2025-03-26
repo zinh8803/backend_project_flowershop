@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\CategoryResource;
 use App\Models\Category;
+use App\Models\EmployeeCategory;
 use Illuminate\Http\Request;
 
 
@@ -50,47 +51,49 @@ class CategoryController extends Controller
      */
 
 
-     /**
-      * @OA\Post(
-     *     path="/api/categories",
-     *     summary="Thêm danh mục mới",
-     *    
-     *     tags={"categories"},
-     *     security={ {"bearerAuth":{}} }, 
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\MediaType(
-     *             mediaType="multipart/form-data",
-     *             @OA\Schema(
-     *                 required={"name", "image"},
-     *                 @OA\Property(property="name", type="string", example="Hoa Hồng"),
-     * 
-     *                 @OA\Property(property="image", type="string", format="binary"),
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=201,
-     *         description="Sản phẩm được tạo thành công",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="status", type="integer", example=201),
-     *             @OA\Property(property="message", type="string", example="Product created successfully"),
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="id", type="integer", example=1),
-     *                 @OA\Property(property="name", type="string", example="Hoa Hồng"),
-     *                 @OA\Property(property="description", type="string", example="Hoa hồng đỏ đẹp"),
-     *                 @OA\Property(property="price", type="number", format="float", example=150000),
-     *                 @OA\Property(property="category_id", type="integer", example=1),
-     *                 @OA\Property(property="image_url", type="string", example="assets/images/hoahong.jpg"),
-     *             ),
-     *         ),
-     *     ),
-     *  
-     * )
-      */
+    /**
+ * @OA\Post(
+ *     path="/api/categories",
+ *     summary="Thêm danh mục mới",
+ *     tags={"categories"},
+ *     security={ {"bearerAuth":{}} }, 
+ *     @OA\RequestBody(
+ *         required=true,
+ *         @OA\MediaType(
+ *             mediaType="multipart/form-data",
+ *             @OA\Schema(
+ *                 required={"name", "image"},
+ *                 @OA\Property(property="employee_id", type="integer", nullable=true, example=1),
+ *                 @OA\Property(property="name", type="string", example="Hoa Hồng"),
+ *                 @OA\Property(property="image", type="string", format="binary")
+ *             )
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=201,
+ *         description="Danh mục được tạo thành công",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="status", type="integer", example=201),
+ *             @OA\Property(property="message", type="string", example="Category created"),
+ *             @OA\Property(property="data", type="object",
+ *                 @OA\Property(property="id", type="integer", example=1),
+ *                 @OA\Property(property="name", type="string", example="Hoa Hồng"),
+ *                 @OA\Property(property="image_url", type="string", example="assets/categories_image/hoahong.jpg"),
+ *                 @OA\Property(property="employee_id", type="integer", nullable=true, example=1)
+ *             )
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=422,
+ *         description="Lỗi xác thực dữ liệu đầu vào"
+ *     )
+ * )
+ */
+
     public function store(Request $request)
     {
        $validatedData = $request->validate([
+            'employee_id' => 'nullable|integer',
             'name' => 'required|unique:categories|max:255',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', 
         ]);
@@ -101,7 +104,11 @@ class CategoryController extends Controller
             $validatedData['image_url'] = 'assets/categories_image/' . $imageName; 
         }
         $category = Category::create($validatedData);
-
+        EmployeeCategory::create([
+            'employee_id' => $request->employee_id,
+            'category_id' => $category->id,
+            'action' => 'add'
+        ]);
         return response()->json([
             'status' => 201,
             'message' => 'Category created',
@@ -187,15 +194,15 @@ class CategoryController extends Controller
 /**
  * @OA\Post(
  *     path="/api/categories/{id}",
- *     summary="Cập nhật sản phẩm",
- *     description="API cập nhật sản phẩm, hỗ trợ upload ảnh",
+ *     summary="Cập nhật danh mục",
+ *     description="API cập nhật danh mục",
  *     tags={"categories"},
  *    security={ {"bearerAuth":{}} },
  *     @OA\Parameter(
  *         name="id",
  *         in="path",
  *         required=true,
- *         description="ID của sản phẩm cần cập nhật",
+ *         description="ID của danh mục cần cập nhật",
  *         @OA\Schema(type="integer", example=1)
  *     ),
  *     @OA\RequestBody(
@@ -204,14 +211,14 @@ class CategoryController extends Controller
  *             mediaType="multipart/form-data",
  *             @OA\Schema(
  *                 @OA\Property(property="name", type="string", example="Hoa Hồng"),
- *               
- *                 @OA\Property(property="image", type="string", format="binary", description="Ảnh sản phẩm (nếu có)"),
+ *                 @OA\Property(property="employee_id", type="integer", nullable=true, example=1),
+ *                 @OA\Property(property="image", type="string", format="binary", description="Ảnh danh mục"),
  *             )
  *         )
  *     ),
  *     @OA\Response(
  *         response=200,
- *         description="Sản phẩm cập nhật thành công",
+ *         description="danh mục cập nhật thành công",
  *         @OA\JsonContent(
  *             @OA\Property(property="status", type="integer", example=200),
  *             @OA\Property(property="message", type="string", example="Product updated successfully"),
@@ -229,8 +236,6 @@ class CategoryController extends Controller
  public function update(Request $request, $id)
  {
      $category = Category::find($id);
- 
-     // Kiểm tra nếu không tìm thấy category
      if (!$category) {
          return response()->json([
              'status' => 404,
@@ -241,6 +246,7 @@ class CategoryController extends Controller
      $validatedData = $request->validate([
          'name' => 'required|unique:categories,name,' . $id . '|max:255',
          'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+         'employee_id' => 'nullable|integer',
      ]);
  
      if ($request->hasFile('image')) {
@@ -251,7 +257,11 @@ class CategoryController extends Controller
      }
  
      $category->update($validatedData);
- 
+     EmployeeCategory::create([
+         'employee_id' => $request->employee_id,
+         'category_id' => $category->id,
+         'action' => 'update'
+     ]);
      return response()->json([
          'status' => 200,
          'message' => 'Category updated successfully',
@@ -265,23 +275,23 @@ class CategoryController extends Controller
       /**
  * @OA\Delete(
  *     path="/api/categories/{id}",
- *     summary="Xóa sản phẩm",
- *     description="API để xóa một sản phẩm khỏi hệ thống.",
+ *     summary="Xóa danh mục",
+ *     description="API để xóa một danh mục khỏi hệ thống.",
  *     tags={"categories"},
  *    security={ {"bearerAuth":{}} },
  *     @OA\Parameter(
  *         name="id",
  *         in="path",
  *         required=true,
- *         description="ID của sản phẩm cần xóa",
+ *         description="ID của danh mục cần xóa",
  *         @OA\Schema(type="integer", example=1)
  *     ),
  *     @OA\Response(
  *         response=200,
- *         description="Xóa sản phẩm thành công",
+ *         description="Xóa danh mục thành công",
  *         @OA\JsonContent(
  *             @OA\Property(property="status", type="integer", example=200),
- *             @OA\Property(property="message", type="string", example="Xóa sản phẩm thành công"),
+ *             @OA\Property(property="message", type="string", example="Xóa danh mục thành công"),
  *             @OA\Property(property="data", type="null"),
  *             @OA\Property(property="errors", type="null")
  *         )

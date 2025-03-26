@@ -23,12 +23,14 @@ class OrderResource extends JsonResource
             'email' => $this->email,
             'phone_number' => $this->phone_number,
             'address' => $this->address,
+            'payment_method' => $this->payment_method,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'discount' => $this->discount ? [
                 'id' => $this->discount->id,
                 'code' => $this->discount->code,
-                'percentage' => $this->discount->percentage,
+                'type' => $this->discount->type,
+                'value' => $this->discount->value,
             ] : null,
 
             'order_items' => OrderItemResource::collection($this->whenLoaded('orderItems'))

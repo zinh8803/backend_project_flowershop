@@ -35,6 +35,11 @@
                                     "image"
                                 ],
                                 "properties": {
+                                    "employee_id": {
+                                        "type": "integer",
+                                        "example": 1,
+                                        "nullable": true
+                                    },
                                     "name": {
                                         "type": "string",
                                         "example": "Hoa Hồng"
@@ -51,7 +56,7 @@
                 },
                 "responses": {
                     "201": {
-                        "description": "Sản phẩm được tạo thành công",
+                        "description": "Danh mục được tạo thành công",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -62,7 +67,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Product created successfully"
+                                            "example": "Category created"
                                         },
                                         "data": {
                                             "properties": {
@@ -74,22 +79,14 @@
                                                     "type": "string",
                                                     "example": "Hoa Hồng"
                                                 },
-                                                "description": {
-                                                    "type": "string",
-                                                    "example": "Hoa hồng đỏ đẹp"
-                                                },
-                                                "price": {
-                                                    "type": "number",
-                                                    "format": "float",
-                                                    "example": 150000
-                                                },
-                                                "category_id": {
-                                                    "type": "integer",
-                                                    "example": 1
-                                                },
                                                 "image_url": {
                                                     "type": "string",
-                                                    "example": "assets/images/hoahong.jpg"
+                                                    "example": "assets/categories_image/hoahong.jpg"
+                                                },
+                                                "employee_id": {
+                                                    "type": "integer",
+                                                    "example": 1,
+                                                    "nullable": true
                                                 }
                                             },
                                             "type": "object"
@@ -99,6 +96,9 @@
                                 }
                             }
                         }
+                    },
+                    "422": {
+                        "description": "Lỗi xác thực dữ liệu đầu vào"
                     }
                 },
                 "security": [
@@ -206,14 +206,14 @@
                 "tags": [
                     "categories"
                 ],
-                "summary": "Cập nhật sản phẩm",
-                "description": "API cập nhật sản phẩm, hỗ trợ upload ảnh",
+                "summary": "Cập nhật danh mục",
+                "description": "API cập nhật danh mục",
                 "operationId": "ca9fbca85918139a8465ca00b4e67b1e",
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
-                        "description": "ID của sản phẩm cần cập nhật",
+                        "description": "ID của danh mục cần cập nhật",
                         "required": true,
                         "schema": {
                             "type": "integer",
@@ -231,8 +231,13 @@
                                         "type": "string",
                                         "example": "Hoa Hồng"
                                     },
+                                    "employee_id": {
+                                        "type": "integer",
+                                        "example": 1,
+                                        "nullable": true
+                                    },
                                     "image": {
-                                        "description": "Ảnh sản phẩm (nếu có)",
+                                        "description": "Ảnh danh mục",
                                         "type": "string",
                                         "format": "binary"
                                     }
@@ -244,7 +249,7 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Sản phẩm cập nhật thành công",
+                        "description": "danh mục cập nhật thành công",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -291,14 +296,14 @@
                 "tags": [
                     "categories"
                 ],
-                "summary": "Xóa sản phẩm",
-                "description": "API để xóa một sản phẩm khỏi hệ thống.",
+                "summary": "Xóa danh mục",
+                "description": "API để xóa một danh mục khỏi hệ thống.",
                 "operationId": "4c12e22a7f8c617bd83bfa1fdc05428d",
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
-                        "description": "ID của sản phẩm cần xóa",
+                        "description": "ID của danh mục cần xóa",
                         "required": true,
                         "schema": {
                             "type": "integer",
@@ -308,7 +313,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Xóa sản phẩm thành công",
+                        "description": "Xóa danh mục thành công",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -319,7 +324,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Xóa sản phẩm thành công"
+                                            "example": "Xóa danh mục thành công"
                                         },
                                         "data": {
                                             "type": "null"
@@ -911,6 +916,180 @@
                 ]
             }
         },
+        "/api/invoices": {
+            "get": {
+                "tags": [
+                    "invoices"
+                ],
+                "summary": "Lấy danh sách hóa đơn",
+                "operationId": "0b8e5b661b472432febe76177e627e86",
+                "responses": {
+                    "200": {
+                        "description": "Danh sách hóa đơn"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "invoices"
+                ],
+                "summary": "Thêm hóa đơn",
+                "operationId": "9a379bde2decc411b48e2fdc02a315ad",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "order_id",
+                                    "total",
+                                    "employee_id"
+                                ],
+                                "properties": {
+                                    "order_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "total": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 500000
+                                    },
+                                    "discount_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "employee_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Hóa đơn được tạo thành công"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/invoices/{id}": {
+            "put": {
+                "tags": [
+                    "invoices"
+                ],
+                "summary": "Cập nhật hóa đơn",
+                "operationId": "f72d18e23867bcd77416956363bfc090",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID của hóa đơn",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "email",
+                                    "phone_number",
+                                    "address",
+                                    "total",
+                                    "status"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Nguyễn Văn B"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "example": "updated@example.com"
+                                    },
+                                    "phone_number": {
+                                        "type": "string",
+                                        "example": "0912345678"
+                                    },
+                                    "address": {
+                                        "type": "string",
+                                        "example": "456 Đường XYZ, TP.HCM"
+                                    },
+                                    "total": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 600000
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "example": "completed"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Cập nhật hóa đơn thành công"
+                    },
+                    "404": {
+                        "description": "Không tìm thấy hóa đơn"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "invoices"
+                ],
+                "summary": "Xóa hóa đơn",
+                "operationId": "f6705ba1adcf67585cb5f13627c592ae",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID của hóa đơn cần xóa",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Xóa hóa đơn thành công"
+                    },
+                    "404": {
+                        "description": "Không tìm thấy hóa đơn"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/Order": {
             "get": {
                 "tags": [
@@ -944,6 +1123,26 @@
                                         "type": "integer",
                                         "example": 2,
                                         "nullable": true
+                                    },
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Nguyễn Văn A"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "example": "nguyenvana@gmail.com"
+                                    },
+                                    "phone_number": {
+                                        "type": "string",
+                                        "example": "0123456789"
+                                    },
+                                    "address": {
+                                        "type": "string",
+                                        "example": "123 Đường ABC, TP.HCM"
+                                    },
+                                    "payment_method": {
+                                        "type": "string",
+                                        "example": "cash"
                                     },
                                     "products[0][product_id]": {
                                         "type": "integer",
@@ -1396,7 +1595,16 @@
                                         "format": "float",
                                         "example": 150000
                                     },
+                                    "stock": {
+                                        "type": "number",
+                                        "format": "integer",
+                                        "example": 100
+                                    },
                                     "category_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "employee_id": {
                                         "type": "integer",
                                         "example": 1
                                     },
@@ -1443,6 +1651,11 @@
                                                     "type": "number",
                                                     "format": "float",
                                                     "example": 150000
+                                                },
+                                                "stock": {
+                                                    "type": "number",
+                                                    "format": "integer",
+                                                    "example": 100
                                                 },
                                                 "category_id": {
                                                     "type": "integer",
@@ -1577,7 +1790,16 @@
                                         "format": "float",
                                         "example": 150000
                                     },
+                                    "stock": {
+                                        "type": "number",
+                                        "format": "integer",
+                                        "example": 100
+                                    },
                                     "category_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "employee_id": {
                                         "type": "integer",
                                         "example": 1
                                     },
@@ -1625,6 +1847,11 @@
                                                     "type": "number",
                                                     "format": "float",
                                                     "example": 150000
+                                                },
+                                                "stock": {
+                                                    "type": "number",
+                                                    "format": "integer",
+                                                    "example": 100
                                                 },
                                                 "category_id": {
                                                     "type": "integer",
@@ -2993,6 +3220,10 @@
         {
             "name": "Employees",
             "description": "Employees"
+        },
+        {
+            "name": "invoices",
+            "description": "invoices"
         },
         {
             "name": "Order",
