@@ -4,7 +4,7 @@ namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
-
+use Illuminate\Auth\AuthenticationException;
 class Handler extends ExceptionHandler
 {
     /**
@@ -26,5 +26,31 @@ class Handler extends ExceptionHandler
         $this->reportable(function (Throwable $e) {
             //
         });
+    }
+
+
+     /**
+     * Render the given exception.
+     *
+     * @param \Illuminate\Http\Request  $request
+     * @param \Throwable  $exception
+     * @return \Illuminate\Http\Response
+     */
+    public function render($request, Throwable $exception)
+    {
+        if ($exception instanceof AuthenticationException) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Unauthorized, no token provided or invalid token.',
+                ], 401);
+            }
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Unauthorized, no token provided or invalid token.',
+            ], 401);
+        }
+
+        return parent::render($request, $exception);
     }
 }

@@ -6,7 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class CheckEmployee
+class CheckApiToken
 {
     /**
      * Handle an incoming request.
@@ -15,10 +15,13 @@ class CheckEmployee
      */
     public function handle(Request $request, Closure $next): Response
     {
-         if ($request->user() && $request->user()->tokenCan('Employee Token')) {
-            return $next($request);
+        if (!Auth()->check()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Unauthorized, no token provided.',
+            ], 401); 
         }
 
-        return response()->json(['message' => 'Unauthorized'], 403);
+        return $next($request);
     }
 }

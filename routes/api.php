@@ -9,6 +9,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductDiscountController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\RoleUserController;
+use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\UserController;
 use App\Models\ProductDiscount;
 use Illuminate\Http\Request;
@@ -71,11 +72,16 @@ Route::put('/Order/{id}/status', [OrderController::class, 'updateStatus']);
 Route::delete('/Order/{id}', [OrderController::class, 'destroy']);
 
 
-Route::get('/positions', [PositionController::class, 'index']);
-Route::post('/positions', [PositionController::class, 'store']);
 
 
-Route::middleware('auth:sanctum','check.employee')->group(function () {
+
+Route::get('/schedules', [ScheduleController::class, 'index']);
+Route::post('/schedules', [ScheduleController::class, 'store']);
+Route::delete('/schedules/{id}', [ScheduleController::class, 'destroy']);
+Route::get('/employees/schedules/{employee_id}', [ScheduleController::class, 'show']);
+Route::post('/schedules/{id}', [ScheduleController::class, 'update']);
+
+Route::middleware(['auth:sanctum','check.employee'])->group(function () {
 
 Route::post('/products', [ProductController::class, 'store']);
 Route::post('/products/{id}', [ProductController::class, 'update']);
@@ -85,6 +91,13 @@ Route::delete('/products/{id}', [ProductController::class, 'destroy']);
 Route::post('/categories', [CategoryController::class, 'store']);
 Route::post('/categories/{id}', [CategoryController::class, 'update']);
 Route::delete('/categories/{id}', [CategoryController::class, 'destroy']);
+
+Route::get('/positions', [PositionController::class, 'index']);
+Route::get('/positions/{id}', [PositionController::class, 'show']);
+Route::post('/positions', [PositionController::class, 'store']);
+Route::put('/positions/{id}', [PositionController::class, 'update']);
+Route::delete('/positions/{id}', [PositionController::class, 'destroy']);
+
 
 
 Route::get('/employees', [EmployeeController::class, 'index']);
