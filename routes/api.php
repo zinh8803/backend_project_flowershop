@@ -5,6 +5,7 @@ use App\Http\Controllers\DiscountController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\PasswordController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductDiscountController;
@@ -119,3 +120,6 @@ Route::get('/invoices/{id}', [InvoiceController::class, 'show']);
 Route::post('/invoices', [InvoiceController::class, 'store']);
 Route::put('/invoices/{id}', [InvoiceController::class, 'update']);
 Route::delete('/invoices/{id}', [InvoiceController::class, 'destroy']);
+
+Route::post('/forgot-password', [PasswordController::class, 'forgotPassword']);
+Route::post('/reset-password', [PasswordController::class, 'resetPassword']);
