@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Invoice extends Model
 {
     use HasFactory;
-    protected $fillable = ['total', 'discount','order_id','employee_id'];
+    protected $fillable = ['order_id','employee_id'];
 
     public function order()
     {

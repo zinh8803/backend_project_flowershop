@@ -16,18 +16,9 @@ class InvoiceResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'user_id' => $this->user_id,
-            'discount_id' => $this->discount_id,
-            'name' => $this->name,
-            'email' => $this->email,
-            'phone_number' => $this->phone_number,
-            'address' => $this->address,
-            'total' => $this->total,
-            'status' => $this->status,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
-            'orderItems' => OrderItemResource::collection($this->orderItems),
-            'discount' => new DiscountResource($this->discount),
+            'order_id' => new OrderResource($this->whenLoaded('order')),
         ];
     }
 }

@@ -17,7 +17,7 @@ class InvoiceController extends Controller
      */
     public function index()
     {
-        $invoices = Invoice::all();
+        $invoices = Invoice::with('order')->get();
         return response()->json([
             'status' => 200,
             'message' => 'Lấy danh sách hóa đơn thành công',
