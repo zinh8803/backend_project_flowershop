@@ -111,81 +111,38 @@ class UserController extends Controller
         ], 201);
     }
 
-   /**
-     * @OA\Post(
-     *     path="/api/login",
-     *     summary="Đăng nhập",
-     *     description="API để đăng nhập bằng email và mật khẩu",
-     *     tags={"users"},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\MediaType(
-     *             mediaType="application/json",
-     *             @OA\Schema(
-     *                 @OA\Property(property="email", type="string", format="email", example="nguyenvana@example.com"),
-     *                 @OA\Property(property="password", type="string", format="password", example="password123")
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Đăng nhập thành công",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="status", type="integer", example=200),
-     *             @OA\Property(property="message", type="string", example="Login successful"),
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="id", type="integer", example=1),
-     *                 @OA\Property(property="name", type="string", example="Nguyen Van A"),
-     *                 @OA\Property(property="email", type="string", example="nguyenvana@example.com"),
-     *                 @OA\Property(property="avatar", type="string", example="assets/avatars/avatar1.jpg"),
-     *                 @OA\Property(property="role", type="string", example="user"),
-     *                 @OA\Property(property="created_at", type="string", example="2025-03-07 10:00:00")
-     *             ),
-     *             @OA\Property(property="token", type="string", example="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=401,
-     *         description="Sai tài khoản hoặc mật khẩu",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="status", type="integer", example=401),
-     *             @OA\Property(property="message", type="string", example="Account or password is incorrect"),
-     *             @OA\Property(property="errors", type="object", nullable=true)
-     *         )
-     *     )
-     * )
-     */
-    public function login(Request $request)
-    {
-        $validatedData = $request->validate([
-            'email' => 'required|email',
-            'password' => 'required'
-        ]);
+  
+    // public function login(Request $request)
+    // {
+    //     $validatedData = $request->validate([
+    //         'email' => 'required|email',
+    //         'password' => 'required'
+    //     ]);
 
-        $user = User::where('email', $request->email)->first();
+    //     $user = User::where('email', $request->email)->first();
 
-        if (!$user || !Hash::check($request->password, $user->password)) {
-            return response()->json([
-                'status' => 401,
-                'message' => 'Account or password is incorrect',
+    //     if (!$user || !Hash::check($request->password, $user->password)) {
+    //         return response()->json([
+    //             'status' => 401,
+    //             'message' => 'Account or password is incorrect',
                 
-            ], 401);
-        }
+    //         ], 401);
+    //     }
 
-        $user->update([
-            'is_logged_in' => true,
-            'last_login_at' => now()
-        ]);
+    //     $user->update([
+    //         'is_logged_in' => true,
+    //         'last_login_at' => now()
+    //     ]);
 
-        $token = $user->createToken('User token')->plainTextToken;
+    //     $token = $user->createToken('User token')->plainTextToken;
 
-        return response()->json([
-            'status' => 200,
-            'message' => 'Login successful',
-            'data' => new UserResource($user),
-            'token' => $token
-        ], 200);
-    }
+    //     return response()->json([
+    //         'status' => 200,
+    //         'message' => 'Login successful',
+    //         'data' => new UserResource($user),
+    //         'token' => $token
+    //     ], 200);
+    // }
 
     /**
  * @OA\Post(

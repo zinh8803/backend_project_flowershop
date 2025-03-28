@@ -4,6 +4,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DiscountController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\LoginController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PasswordController;
 use App\Http\Controllers\PositionController;
@@ -45,7 +46,7 @@ Route::middleware(['auth:sanctum', 'check.user'])->put('/users/{id}', [UserContr
 
 
 Route::post('/register', [UserController::class, 'register']);
-Route::post('/login', [UserController::class, 'login']);
+Route::post('/login', [LoginController::class, 'login']);
 Route::post('/logout', [UserController::class, 'logout']);
 Route::get('/users', [UserController::class, 'getAllUsers']);
 Route::post('/users/update-avatar/{id}', [UserController::class, 'updateAvatar']);
@@ -98,7 +99,7 @@ Route::delete('/positions/{id}', [PositionController::class, 'destroy']);
 Route::post('/products', [ProductController::class, 'store']);
 Route::post('/products/{id}', [ProductController::class, 'update']);
 Route::delete('/products/{id}', [ProductController::class, 'destroy']);
-Route::middleware(['auth:sanctum','check.employee'])->group(function () {
+Route::middleware(['auth:sanctum','check.api.token:Employee'])->group(function () {
 
 
 
@@ -114,6 +115,7 @@ Route::get('/employees', [EmployeeController::class, 'index']);
 
 });
 Route::post('/employees/register', [EmployeeController::class, 'register']);
+Route::put('/employees/{id}', [EmployeeController::class, 'update']);
 
 Route::get('/invoices', [InvoiceController::class, 'index']);
 Route::get('/invoices/{id}', [InvoiceController::class, 'show']);   

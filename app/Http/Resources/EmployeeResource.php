@@ -17,10 +17,10 @@ class EmployeeResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'password' => $this->password,
             'position' => new PositionResource($this->position),
             'email' => $this->email,
             'phone' => $this->phone_number,
-            'address' => $this->address,        ];
+            'address' => $this->address,        
+        ];
     }
 }

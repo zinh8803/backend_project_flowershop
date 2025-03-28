@@ -13,13 +13,13 @@ class CheckApiToken
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next): Response
+    public function handle(Request $request, Closure $next, $scope) : Response
     {
-        if (!Auth()->check()) {
+        if (!$request->user() || !$request->user()->tokenCan($scope)) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Unauthorized, no token provided.',
-            ], 401); 
+                'message' => 'Forbidden',
+            ], 403);
         }
 
         return $next($request);

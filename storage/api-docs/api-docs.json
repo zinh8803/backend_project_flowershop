@@ -897,10 +897,6 @@
                                                 }
                                             },
                                             "type": "object"
-                                        },
-                                        "token": {
-                                            "type": "string",
-                                            "example": "xyz123abc456"
                                         }
                                     },
                                     "type": "object"
@@ -914,6 +910,145 @@
                         "bearerAuth": []
                     }
                 ]
+            }
+        },
+        "/api/employees/{id}": {
+            "put": {
+                "tags": [
+                    "employees"
+                ],
+                "summary": "Cập nhật thông tin nhân viên",
+                "description": "API để cập nhật thông tin của nhân viên dựa trên id",
+                "operationId": "aab9bddc0c5cab0acc27a9d58b9cb2b0",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID của nhân viên cần cập nhật",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Nguyen Van B"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "nguyenb@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "newpassword123"
+                                    },
+                                    "position_id": {
+                                        "type": "integer",
+                                        "example": 2
+                                    },
+                                    "address": {
+                                        "type": "string",
+                                        "example": "123 Main Street"
+                                    },
+                                    "phone_number": {
+                                        "type": "string",
+                                        "example": "123456789"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Nhân viên cập nhật thành công",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Employee updated successfully"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "Nguyen Van B"
+                                                },
+                                                "email": {
+                                                    "type": "string",
+                                                    "example": "nguyenb@example.com"
+                                                },
+                                                "position_id": {
+                                                    "type": "integer",
+                                                    "example": 2
+                                                },
+                                                "address": {
+                                                    "type": "string",
+                                                    "example": "123 Main Street"
+                                                },
+                                                "phone_number": {
+                                                    "type": "string",
+                                                    "example": "123456789"
+                                                },
+                                                "created_at": {
+                                                    "type": "string",
+                                                    "example": "2025-03-07 10:00:00"
+                                                },
+                                                "updated_at": {
+                                                    "type": "string",
+                                                    "example": "2025-03-07 10:00:00"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Nhân viên không tìm thấy",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 404
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Employee not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
             }
         },
         "/api/invoices": {
@@ -1088,6 +1223,106 @@
                         "bearerAuth": []
                     }
                 ]
+            }
+        },
+        "/api/login": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Đăng nhập vào hệ thống",
+                "operationId": "c5e838284c7f343f0e5e5fd589161c96",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "example": "user@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "password123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Đăng nhập thành công",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Login successful"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "John Doe"
+                                                },
+                                                "email": {
+                                                    "type": "string",
+                                                    "example": "user@example.com"
+                                                },
+                                                "created_at": {
+                                                    "type": "string",
+                                                    "example": "2022-01-01T00:00:00"
+                                                },
+                                                "updated_at": {
+                                                    "type": "string",
+                                                    "example": "2022-01-01T00:00:00"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "token": {
+                                            "type": "string",
+                                            "example": "user-token-string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Thông tin đăng nhập không chính xác",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Account or password is incorrect"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
             }
         },
         "/api/Order": {
@@ -2895,117 +3130,6 @@
                 }
             }
         },
-        "/api/login": {
-            "post": {
-                "tags": [
-                    "users"
-                ],
-                "summary": "Đăng nhập",
-                "description": "API để đăng nhập bằng email và mật khẩu",
-                "operationId": "0fc9610184083ac6dddab2c63139225a",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "properties": {
-                                    "email": {
-                                        "type": "string",
-                                        "format": "email",
-                                        "example": "nguyenvana@example.com"
-                                    },
-                                    "password": {
-                                        "type": "string",
-                                        "format": "password",
-                                        "example": "password123"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Đăng nhập thành công",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "status": {
-                                            "type": "integer",
-                                            "example": 200
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Login successful"
-                                        },
-                                        "data": {
-                                            "properties": {
-                                                "id": {
-                                                    "type": "integer",
-                                                    "example": 1
-                                                },
-                                                "name": {
-                                                    "type": "string",
-                                                    "example": "Nguyen Van A"
-                                                },
-                                                "email": {
-                                                    "type": "string",
-                                                    "example": "nguyenvana@example.com"
-                                                },
-                                                "avatar": {
-                                                    "type": "string",
-                                                    "example": "assets/avatars/avatar1.jpg"
-                                                },
-                                                "role": {
-                                                    "type": "string",
-                                                    "example": "user"
-                                                },
-                                                "created_at": {
-                                                    "type": "string",
-                                                    "example": "2025-03-07 10:00:00"
-                                                }
-                                            },
-                                            "type": "object"
-                                        },
-                                        "token": {
-                                            "type": "string",
-                                            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Sai tài khoản hoặc mật khẩu",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "status": {
-                                            "type": "integer",
-                                            "example": 401
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Account or password is incorrect"
-                                        },
-                                        "errors": {
-                                            "type": "object",
-                                            "nullable": true
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
         "/api/logout": {
             "post": {
                 "tags": [
@@ -3313,16 +3437,20 @@
             "description": "Employees"
         },
         {
+            "name": "employees",
+            "description": "employees"
+        },
+        {
             "name": "invoices",
             "description": "invoices"
         },
         {
-            "name": "Order",
-            "description": "Order"
-        },
-        {
             "name": "Authentication",
             "description": "Authentication"
+        },
+        {
+            "name": "Order",
+            "description": "Order"
         },
         {
             "name": "Positions",

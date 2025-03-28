@@ -95,7 +95,6 @@ class EmployeeController extends Controller
      *                 @OA\Property(property="phone_number", type="string", example="0123456789"),
      *                 @OA\Property(property="created_at", type="string", format="date-time", example="2025-03-24 10:00:00")
      *             ),
-     *             @OA\Property(property="token", type="string", example="xyz123abc456")
      *         )
      *     )
      * )
@@ -120,12 +119,10 @@ class EmployeeController extends Controller
                 'address' => $validated['address'] ?? null,
                 'phone_number' => $validated['phone_number'] ?? null,
         ]);
-        $token = $employee->createToken('Employee Token')->plainTextToken;
         return response()->json([
             'status' => 'success',
             'message' => 'Employee created successfully',
             'data' => new EmployeeResource($employee),
-            'token' => $token
         ], 201);
     }
 
@@ -148,9 +145,86 @@ class EmployeeController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Employee $employee)
+    /**
+     * @OA\Put(
+     *     path="/api/employees/{id}",
+     *     summary="Cập nhật thông tin nhân viên",
+     *     description="API để cập nhật thông tin của nhân viên dựa trên id",
+     *     tags={"employees"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID của nhân viên cần cập nhật",
+     *         required=true,
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="name", type="string", example="Nguyen Van B"),
+     *             @OA\Property(property="email", type="string", format="email", example="nguyenb@example.com"),
+     *             @OA\Property(property="password", type="string", format="password", example="newpassword123"),
+     *             @OA\Property(property="position_id", type="integer", example=2),
+     *             @OA\Property(property="address", type="string", example="123 Main Street"),
+     *             @OA\Property(property="phone_number", type="string", example="123456789")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Nhân viên cập nhật thành công",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="status", type="integer", example=200),
+     *             @OA\Property(property="message", type="string", example="Employee updated successfully"),
+     *             @OA\Property(property="data", type="object",
+     *                 @OA\Property(property="id", type="integer", example=1),
+     *                 @OA\Property(property="name", type="string", example="Nguyen Van B"),
+     *                 @OA\Property(property="email", type="string", example="nguyenb@example.com"),
+     *                 @OA\Property(property="position_id", type="integer", example=2),
+     *                 @OA\Property(property="address", type="string", example="123 Main Street"),
+     *                 @OA\Property(property="phone_number", type="string", example="123456789"),
+     *                 @OA\Property(property="created_at", type="string", example="2025-03-07 10:00:00"),
+     *                 @OA\Property(property="updated_at", type="string", example="2025-03-07 10:00:00")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Nhân viên không tìm thấy",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="status", type="integer", example=404),
+     *             @OA\Property(property="message", type="string", example="Employee not found")
+     *         )
+     *     )
+     * )
+     */
+
+    public function update(Request $request,$id)
     {
-        //
+        $employee = Employee::find($id);
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email',
+            'password' => 'required|string|min:6',
+            'position_id' => 'required|exists:positions,id',
+            'address' => 'nullable|string',
+            'phone_number' => 'nullable|string',
+        ]);
+        if(!$employee){
+            return response()->json([
+                'status' => 404,
+                'message' => 'Employee not found',
+            ], 404);
+        }
+        $employee->update($validated);
+        return response()->json([
+            'status' => 200,
+            'message' => 'Employee updated successfully',
+            'data' => new EmployeeResource($employee),
+        ],200);
+
     }
 
     /**
