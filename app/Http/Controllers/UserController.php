@@ -144,75 +144,7 @@ class UserController extends Controller
     //     ], 200);
     // }
 
-    /**
- * @OA\Post(
- *     path="/api/logout",
- *     summary="Đăng xuất",
- *     description="API để đăng xuất người dùng",
- *     tags={"users"},
- *     @OA\RequestBody(
- *         required=true,
- *         @OA\JsonContent(
- *             @OA\Property(property="id", type="integer", example=1)
- *         )
- *     ),
- *     @OA\Response(
- *         response=200,
- *         description="Đăng xuất thành công",
- *         @OA\JsonContent(
- *             @OA\Property(property="status", type="integer", example=200),
- *             @OA\Property(property="message", type="string", example="Logged out successfully")
- *         )
- *     ),
- *     @OA\Response(
- *         response=404,
- *         description="Người dùng không tồn tại",
- *         @OA\JsonContent(
- *             @OA\Property(property="status", type="integer", example=404),
- *             @OA\Property(property="message", type="string", example="User not found"),
- *             @OA\Property(property="errors", type="object", nullable=true)
- *         )
- *     ),
- *     @OA\Response(
- *         response=422,
- *         description="Dữ liệu không hợp lệ",
- *         @OA\JsonContent(
- *             @OA\Property(property="status", type="integer", example=422),
- *             @OA\Property(property="message", type="string", example="Validation error"),
- *             @OA\Property(property="errors", type="object",
- *                 @OA\Property(property="id", type="array",
- *                     @OA\Items(type="string", example="The id field is required.")
- *                 )
- *             )
- *         )
- *     )
- * )
- */
 
-
-    public function logout(Request $request)
-    {
-    $validatedData = $request->validate([
-        'id' => 'required|integer|exists:users,id'
-    ]);
-
-    $user = User::find($request->id);
-
-    if (!$user) {
-        return response()->json([
-            'status' => 404,
-            'message' => 'User not found',
-            'errors' => null
-        ], 404);
-    }
-
-    $user->tokens()->delete();
-    $user->update(['is_logged_in' => false]);
-    return response()->json([
-        'status' => 200,
-        'message' => 'Logged out successfully'
-    ], 200);
-    }
 
     /**
      * Show the form for editing the specified resource.
