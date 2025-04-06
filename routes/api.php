@@ -14,6 +14,7 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\RoleUserController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\VNPayController;
 use App\Models\ProductDiscount;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -125,3 +126,6 @@ Route::delete('/invoices/{id}', [InvoiceController::class, 'destroy']);
 
 Route::post('/forgot-password', [PasswordController::class, 'forgotPassword']);
 Route::post('/reset-password', [PasswordController::class, 'resetPassword']);
+
+Route::post('/payment',[VNPayController::class, 'createPayment']); 
+Route::get('/vnpay_return', [VNPayController::class, 'vnpayReturn']); 

@@ -150,7 +150,7 @@ class EmployeeController extends Controller
      *     path="/api/employees/{id}",
      *     summary="Cập nhật thông tin nhân viên",
      *     description="API để cập nhật thông tin của nhân viên dựa trên id",
-     *     tags={"employees"},
+     *     tags={"Employees"},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",

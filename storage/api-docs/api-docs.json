@@ -915,7 +915,7 @@
         "/api/employees/{id}": {
             "put": {
                 "tags": [
-                    "employees"
+                    "Employees"
                 ],
                 "summary": "Cập nhật thông tin nhân viên",
                 "description": "API để cập nhật thông tin của nhân viên dựa trên id",
@@ -1315,6 +1315,110 @@
                                         "message": {
                                             "type": "string",
                                             "example": "Account or password is incorrect"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/logout": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Đăng xuất",
+                "description": "API để đăng xuất người dùng",
+                "operationId": "399284ae5e84627c95a691127018a412",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Đăng xuất thành công",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Logged out successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Người dùng không tồn tại",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 404
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User not found"
+                                        },
+                                        "errors": {
+                                            "type": "object",
+                                            "nullable": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Dữ liệu không hợp lệ",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 422
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Validation error"
+                                        },
+                                        "errors": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "example": "The id field is required."
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
                                         }
                                     },
                                     "type": "object"
@@ -3130,110 +3234,6 @@
                 }
             }
         },
-        "/api/logout": {
-            "post": {
-                "tags": [
-                    "Authentication"
-                ],
-                "summary": "Đăng xuất",
-                "description": "API để đăng xuất người dùng",
-                "operationId": "67d5147477c548bfbc3f982833bbc7bd",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "properties": {
-                                    "id": {
-                                        "type": "integer",
-                                        "example": 1
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Đăng xuất thành công",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "status": {
-                                            "type": "integer",
-                                            "example": 200
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Logged out successfully"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Người dùng không tồn tại",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "status": {
-                                            "type": "integer",
-                                            "example": 404
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "User not found"
-                                        },
-                                        "errors": {
-                                            "type": "object",
-                                            "nullable": true
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Dữ liệu không hợp lệ",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "status": {
-                                            "type": "integer",
-                                            "example": 422
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Validation error"
-                                        },
-                                        "errors": {
-                                            "properties": {
-                                                "id": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "string",
-                                                        "example": "The id field is required."
-                                                    }
-                                                }
-                                            },
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
         "/api/users/{id}": {
             "put": {
                 "tags": [
@@ -3371,6 +3371,101 @@
                     }
                 }
             }
+        },
+        "/api/payment": {
+            "post": {
+                "tags": [
+                    "VNPAY"
+                ],
+                "summary": "Tạo URL thanh toán VNPAY",
+                "description": "Tạo URL thanh toán dựa trên mã đơn hàng và số tiền. Người dùng chọn ngân hàng ở trang VNPAY.",
+                "operationId": "3679f377e404e999b894f71c8d0e3e9b",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "order_id",
+                                    "amount"
+                                ],
+                                "properties": {
+                                    "order_id": {
+                                        "type": "string",
+                                        "example": "HD00123"
+                                    },
+                                    "amount": {
+                                        "type": "number",
+                                        "example": 150000
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "URL thanh toán thành công",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Tạo URL thanh toán thành công"
+                                        },
+                                        "payment_url": {
+                                            "type": "string",
+                                            "example": "https://sandbox.vnpayment.vn/..."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/vnpay_return": {
+            "get": {
+                "tags": [
+                    "VNPAY"
+                ],
+                "summary": "Nhận kết quả thanh toán từ VNPAY",
+                "description": "Xử lý kết quả thanh toán và xác minh chữ ký.",
+                "operationId": "7bea1ccd66c3055dff17964d312567dd",
+                "responses": {
+                    "200": {
+                        "description": "Thanh toán thành công",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Thanh toán thành công"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Thanh toán thất bại hoặc sai chữ ký"
+                    }
+                }
+            }
         }
     },
     "components": {
@@ -3437,10 +3532,6 @@
             "description": "Employees"
         },
         {
-            "name": "employees",
-            "description": "employees"
-        },
-        {
             "name": "invoices",
             "description": "invoices"
         },
@@ -3471,6 +3562,10 @@
         {
             "name": "users",
             "description": "users"
+        },
+        {
+            "name": "VNPAY",
+            "description": "VNPAY"
         }
     ],
     "security": [
