@@ -15,6 +15,7 @@ use App\Http\Controllers\RoleUserController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VNPayController;
+use App\Http\Resources\UserResource;
 use App\Models\ProductDiscount;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -33,22 +34,24 @@ Route::get('/api/documentation', [SwaggerController::class, 'api'])->name('swagg
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+Route::middleware(['auth:sanctum', 'check.api.token:user'])->get('user/profile', [LoginController::class, 'profile']);
 
-
+// Route::get('/user/profile', [LoginController::class, 'profile']);
 
 Route::post('/categories', [CategoryController::class, 'store']);
 Route::post('/categories/{id}', [CategoryController::class, 'update']);
 Route::delete('/categories/{id}', [CategoryController::class, 'destroy']);
 
-Route::middleware(['auth:sanctum', 'check.user'])->put('/users/{id}', [UserController::class, 'update']);
+Route::middleware(['auth:sanctum', 'check.api.token:user'])->group(function () {
+    Route::get('/user/profile', [LoginController::class, 'profile']);
+    Route::put('/users/{id}', [UserController::class, 'update']);
+    Route::post('/logout', [LoginController::class, 'logout']);
+});
 
 
 Route::post('/register', [UserController::class, 'register']);
 Route::post('/login', [LoginController::class, 'login']);
-Route::post('/logout', [UserController::class, 'logout']);
+
 Route::get('/users', [UserController::class, 'getAllUsers']);
 Route::post('/users/update-avatar/{id}', [UserController::class, 'updateAvatar']);
 

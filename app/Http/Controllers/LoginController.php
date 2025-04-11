@@ -114,18 +114,60 @@ class LoginController extends Controller
         ], 401);
     }
 
+
+        /**
+     * @OA\Get(
+     *     path="/api/user/profile",
+     *     summary="Lấy thông tin người dùng đăng nhập",
+     *     description="Trả về thông tin người dùng dựa trên token đã đăng nhập",
+     *     operationId="getUserProfile",
+     *     tags={"Auth"},
+     *      security={ {"bearerAuth":{}} }, 
+     *     @OA\Response(
+     *         response=200,
+     *         description="Lấy thông tin người dùng thành công",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="status", type="integer", example=200),
+     *             @OA\Property(property="message", type="string", example="Lấy thông tin người dùng thành công"),
+     *             @OA\Property(property="data", type="object",
+     *                 @OA\Property(property="id", type="integer", example=1),
+     *                 @OA\Property(property="name", type="string", example="Nguyễn Văn A"),
+     *                 @OA\Property(property="email", type="string", example="user@example.com"),
+     *                 @OA\Property(property="created_at", type="string", format="date-time", example="2025-04-11T14:30:00Z"),
+     *                 @OA\Property(property="updated_at", type="string", format="date-time", example="2025-04-11T15:00:00Z")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Không có quyền truy cập",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="status", type="integer", example=401),
+     *             @OA\Property(property="message", type="string", example="Unauthenticated")
+     *         )
+     *     )
+     * )
+     */
+    public function profile(Request $request)
+    {
+        return response()->json([
+            'status' => 200,
+            'message' => 'Lấy thông tin người dùng thành công',
+            'data' => new UserResource($request->user()),
+        ]);
+    }
+
+
+
     /**
      * @OA\Post(
      *     path="/api/logout",
      *     summary="Đăng xuất",
-     *     description="API để đăng xuất người dùng",
+     *     description="Đăng xuất người dùng bằng cách hủy token hiện tại",
      *     tags={"Authentication"},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             @OA\Property(property="id", type="integer", example=1)
-     *         )
-     *     ),
+     *    security={ {"bearerAuth":{}} }, 
      *     @OA\Response(
      *         response=200,
      *         description="Đăng xuất thành công",
@@ -135,52 +177,34 @@ class LoginController extends Controller
      *         )
      *     ),
      *     @OA\Response(
-     *         response=404,
-     *         description="Người dùng không tồn tại",
+     *         response=401,
+     *         description="Người dùng chưa đăng nhập hoặc token không hợp lệ",
      *         @OA\JsonContent(
-     *             @OA\Property(property="status", type="integer", example=404),
-     *             @OA\Property(property="message", type="string", example="User not found"),
-     *             @OA\Property(property="errors", type="object", nullable=true)
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=422,
-     *         description="Dữ liệu không hợp lệ",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="status", type="integer", example=422),
-     *             @OA\Property(property="message", type="string", example="Validation error"),
-     *             @OA\Property(property="errors", type="object",
-     *                 @OA\Property(property="id", type="array",
-     *                     @OA\Items(type="string", example="The id field is required.")
-     *                 )
-     *             )
+     *             @OA\Property(property="status", type="integer", example=401),
+     *             @OA\Property(property="message", type="string", example="Unauthenticated")
      *         )
      *     )
      * )
      */
-
-
     public function logout(Request $request)
     {
-    $validatedData = $request->validate([
-        'id' => 'required|integer|exists:users,id'
-    ]);
+        $user = $request->user();
 
-    $user = User::find($request->id);
+        if (!$user) {
+            return response()->json([
+                'status' => 401,
+                'message' => 'Unauthenticated',
+            ], 401);
+        }
 
-    if (!$user) {
+        $user->currentAccessToken()->delete();
+
+        $user->update(['is_logged_in' => false]);
+
         return response()->json([
-            'status' => 404,
-            'message' => 'User not found',
-            'errors' => null
-        ], 404);
+            'status' => 200,
+            'message' => 'Logged out successfully',
+        ], 200);
     }
 
-    $user->tokens()->delete();
-    $user->update(['is_logged_in' => false]);
-    return response()->json([
-        'status' => 200,
-        'message' => 'Logged out successfully'
-    ], 200);
-    }
 }

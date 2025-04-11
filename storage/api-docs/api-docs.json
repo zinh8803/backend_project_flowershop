@@ -1325,30 +1325,98 @@
                 }
             }
         },
+        "/api/user/profile": {
+            "get": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Lấy thông tin người dùng đăng nhập",
+                "description": "Trả về thông tin người dùng dựa trên token đã đăng nhập",
+                "operationId": "getUserProfile",
+                "responses": {
+                    "200": {
+                        "description": "Lấy thông tin người dùng thành công",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Lấy thông tin người dùng thành công"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "Nguyễn Văn A"
+                                                },
+                                                "email": {
+                                                    "type": "string",
+                                                    "example": "user@example.com"
+                                                },
+                                                "created_at": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "example": "2025-04-11T14:30:00Z"
+                                                },
+                                                "updated_at": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "example": "2025-04-11T15:00:00Z"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Không có quyền truy cập",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 401
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/logout": {
             "post": {
                 "tags": [
                     "Authentication"
                 ],
                 "summary": "Đăng xuất",
-                "description": "API để đăng xuất người dùng",
+                "description": "Đăng xuất người dùng bằng cách hủy token hiện tại",
                 "operationId": "399284ae5e84627c95a691127018a412",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "properties": {
-                                    "id": {
-                                        "type": "integer",
-                                        "example": 1
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
                 "responses": {
                     "200": {
                         "description": "Đăng xuất thành công",
@@ -1370,55 +1438,19 @@
                             }
                         }
                     },
-                    "404": {
-                        "description": "Người dùng không tồn tại",
+                    "401": {
+                        "description": "Người dùng chưa đăng nhập hoặc token không hợp lệ",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
                                         "status": {
                                             "type": "integer",
-                                            "example": 404
+                                            "example": 401
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "User not found"
-                                        },
-                                        "errors": {
-                                            "type": "object",
-                                            "nullable": true
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Dữ liệu không hợp lệ",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "status": {
-                                            "type": "integer",
-                                            "example": 422
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Validation error"
-                                        },
-                                        "errors": {
-                                            "properties": {
-                                                "id": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "string",
-                                                        "example": "The id field is required."
-                                                    }
-                                                }
-                                            },
-                                            "type": "object"
+                                            "example": "Unauthenticated"
                                         }
                                     },
                                     "type": "object"
@@ -1426,7 +1458,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/Order": {
@@ -3724,6 +3761,10 @@
         {
             "name": "Authentication",
             "description": "Authentication"
+        },
+        {
+            "name": "Auth",
+            "description": "Auth"
         },
         {
             "name": "Order",
