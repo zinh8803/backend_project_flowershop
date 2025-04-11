@@ -78,13 +78,14 @@ class LoginController extends Controller
                 'last_login_at' => now()
             ]);
 
-            $token = $user->createToken('User token',['user'])->plainTextToken;
-
+            $token = $user->createToken('User token',['user']);
+            $token->accessToken->expires_at = now()->addDays(7);
+            $token->accessToken->save();
             return response()->json([
                 'status' => 200,
                 'message' => 'Login successful',
                 'data' => new UserResource($user),
-                'token' => $token
+                'token' => $token->plainTextToken
             ], 200);
         }
 
@@ -97,13 +98,14 @@ class LoginController extends Controller
                     'message' => 'Account or password is incorrect',
                 ], 401);
             }
-            $token = $employee->createToken('Employee token',['Employee'])->plainTextToken;
-
+            $token = $employee->createToken('Employee token',['Employee']);
+            $token->accessToken->expires_at = now()->addDays(7);
+            $token->accessToken->save();
             return response()->json([
                 'status' => 200,
                 'message' => 'Login successful',
                 'data' => new EmployeeResource($employee),
-                'token' => $token
+                'token' => $token->plainTextToken
             ], 200);
         }
         return response()->json([
