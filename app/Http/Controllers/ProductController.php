@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\BaseResource;
 use App\Http\Resources\ProductResource;
+use App\Models\Category;
 use App\Models\EmployeeProduct;
 use App\Models\Product;
 
@@ -94,6 +95,50 @@ class ProductController extends Controller
             'data' => ProductResource::collection($products),
            
         ],200);
+    }
+
+
+    /**
+     * @OA\Get(
+     *     path="/api/products/get8products",
+     *     summary="Lấy danh sách 8 sản phẩm đầu tiên",
+     *     description="Trả về danh sách 8 sản phẩm đầu tiên trong cửa hàng",
+     *     tags={"Products"},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Danh sách hoa",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="status", type="integer", example=200),
+     *             @OA\Property(property="message", type="string", example="Lấy danh sách sản phẩm thành công"),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="array",
+     *                 @OA\Items(
+     *                     type="object",
+     *                     @OA\Property(property="id", type="integer", example=1),
+     *                     @OA\Property(property="name", type="string", example="Hoa hướng dương"),
+     *                     @OA\Property(property="description", type="string", example="Hoa tươi tặng sinh nhật"),
+     *                     @OA\Property(property="price", type="number", format="float", example=120000),
+     *                     @OA\Property(property="category_id", type="integer", example=3),
+     *                     @OA\Property(property="image_url", type="string", example="https://example.com/images/sunflower.jpg"),
+     *                     @OA\Property(property="created_at", type="string", format="date-time", example="2025-04-11T09:00:00Z"),
+     *                     @OA\Property(property="updated_at", type="string", format="date-time", example="2025-04-11T09:30:00Z")
+     *                 )
+     *             )
+     *         )
+     *     )
+     * )
+     */
+    public function get8product()
+    {
+        $products = Product::take(8)->get();
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'Lấy danh sách sản phẩm thành công',
+            'data' => ProductResource::collection($products),
+        ], 200);
     }
 //     public function index()
 // {
@@ -204,25 +249,95 @@ class ProductController extends Controller
  *     )
  * )
  */
-public function show($id)
-{
-    $product = Product::find($id);
+    public function show($id)
+    {
+        $product = Product::find($id);
 
-    if (!$product) {
+        if (!$product) {
+            return response()->json([
+                'status' => 404,
+                'message' => 'Product not found',
+
+            ], 404);
+        }
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'Lấy thông tin sản phẩm thành công',
+            'data' => new ProductResource($product),
+        ], 200);
+    }
+
+
+/**
+ * @OA\Get(
+ *     path="/api/products/category/{category_id}",
+ *     summary="Lấy thông tin chi tiết hoa theo danh mục",
+ *     description="Trả về danh sách các sản phẩm hoa theo ID danh mục",
+ *     operationId="getFlowersByCategoryId",
+ *     tags={"Products"},
+ *     @OA\Parameter(
+ *         name="category_id",
+ *         in="path",
+ *         required=true,
+ *         description="ID của danh mục hoa",
+ *         @OA\Schema(type="integer", example=2)
+ *     ),
+ *     @OA\Response(
+ *         response=200,
+ *         description="Lấy thông tin hoa thành công",
+ *         @OA\JsonContent(
+ *             type="object",
+ *             @OA\Property(property="status", type="integer", example=200),
+ *             @OA\Property(property="message", type="string", example="Lấy thông tin hoa thành công"),
+ *             @OA\Property(
+ *                 property="data",
+ *                 type="array",
+ *                 @OA\Items(
+ *                     type="object",
+ *                     @OA\Property(property="id", type="integer", example=1),
+ *                     @OA\Property(property="name", type="string", example="Hoa hồng đỏ"),
+ *                     @OA\Property(property="description", type="string", example="Bó hoa tình yêu lãng mạn"),
+ *                     @OA\Property(property="price", type="number", format="float", example=150000),
+ *                     @OA\Property(property="category_id", type="integer", example=2),
+ *                     @OA\Property(property="image_url", type="string", example="https://example.com/images/rose.jpg"),
+ *                     @OA\Property(property="created_at", type="string", format="date-time", example="2025-04-11T10:00:00Z"),
+ *                     @OA\Property(property="updated_at", type="string", format="date-time", example="2025-04-11T10:05:00Z")
+ *                 )
+ *             )
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=404,
+ *         description="Không tìm thấy hoa trong danh mục này",
+ *         @OA\JsonContent(
+ *             type="object",
+ *             @OA\Property(property="status", type="integer", example=404),
+ *             @OA\Property(property="message", type="string", example="No flowers found in this category"),
+ *             @OA\Property(property="errors", type="string", nullable=true)
+ *         )
+ *     )
+ * )
+ */
+
+public function showByCategory($category_id)
+{
+    $product = product::where('category_id', $category_id)->get();
+
+    if ($product->isEmpty()) {
         return response()->json([
             'status' => 404,
-            'message' => 'Product not found',
-
+            'message' => 'No flowers found in this category',
         ], 404);
     }
 
     return response()->json([
         'status' => 200,
-        'message' => 'Lấy thông tin sản phẩm thành công',
-        'data' => new ProductResource($product),
+        'message' => 'Lấy thông tin hoa thành công',
+        'data' => ProductResource::collection($product),
     ], 200);
 }
-
+    
     /**
      * Show the form for editing the specified resource.
      */

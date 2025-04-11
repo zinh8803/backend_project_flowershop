@@ -60,8 +60,9 @@ Route::get('/categories/{id}', [CategoryController::class, 'show']);
 
 
 Route::get('/products', [ProductController::class, 'index']);
+Route::get('/products/get8products', [ProductController::class, 'get8product']);
 Route::get('/products/{id}', [ProductController::class, 'show']);
-
+Route::get('/products/category/{category_id}', [ProductController::class, 'showByCategory']);
 
 Route::get('/discounts', [DiscountController::class, 'index']);
 Route::post('/discounts', [DiscountController::class, 'store']);
