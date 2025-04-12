@@ -96,7 +96,51 @@ class ProductController extends Controller
            
         ],200);
     }
+        /**
+     * @OA\Get(
+     *     path="/api/discount-product",
+     *     operationId="getAllProductDiscount",
+     *     tags={"Products"},
+     *     summary="Lấy danh sách sản phẩm giảm giá",
+     *     description="Trả về danh sách tất cả sản phẩm có giá cuối (final_price) nhỏ hơn giá gốc (price).",
+     *     @OA\Response(
+     *         response=200,
+     *         description="Lấy danh sách sản phẩm giảm giá thành công",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="status", type="integer", example=200),
+     *             @OA\Property(property="message", type="string", example="Lấy danh sách sản phẩm giảm giá thành công"),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="array",
+     *                 @OA\Items(ref="#/components/schemas/ProductResource")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Lỗi server",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="status", type="integer", example=500),
+     *             @OA\Property(property="message", type="string", example="Đã xảy ra lỗi khi lấy danh sách sản phẩm")
+     *         )
+     *     )
+     * )
+     */
+    public function getallproductdiscount()
+    {
+        $products = Product::all();
+        $discountedProducts = $products->filter(function ($product) {
+            return $product->final_price < $product->price;
+        });
 
+        return response()->json([
+            'status' => 200,
+            'message' => 'Lấy danh sách sản phẩm giảm giá thành công',
+            'data' => ProductResource::collection($discountedProducts)
+        ]);
+    }
 
     /**
      * @OA\Get(
@@ -140,29 +184,29 @@ class ProductController extends Controller
             'data' => ProductResource::collection($products),
         ], 200);
     }
-//     public function index()
-// {
-//     $products = Product::with('category', 'discount')->get()->map(function ($product) {
-//         return [
-//             'id' => $product->id,
-//             'name' => $product->name,
-//             'description' => $product->description,
-//             'price' => $product->price,
-//             'final_price' => $product->final_price, // Gọi accessor tính giá giảm
-//             'is_discounted' => $product->final_price < $product->price, // Kiểm tra có giảm giá không
-//             'category' => $product->category->name ?? null,
-//             'image_url' => $product->image_url,
-//         ];
-//     });
 
-//     return response()->json([
-//         'status' => 'success',
-//         'message' => 'Lấy danh sách sản phẩm thành công',
-//         'data' => $products,
-//         'errors' => null
-//     ]);
-// }
 
+
+    public function searchProducts(Request $request)
+    {
+        $query = $request->query('query');
+
+        if (empty($query)) {
+            return response()->json([
+                'status' => 400,
+                'message' => 'Vui lòng cung cấp từ khóa tìm kiếm',
+                'data' => []
+            ], 400);
+        }
+
+        $products = Product::where('name', 'like', '%' . $query . '%')->get();
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'Tìm kiếm sản phẩm thành công',
+            'data' => ProductResource::collection($products)
+        ]);
+    }
 
     /**
      * Show the form for creating a new resource.

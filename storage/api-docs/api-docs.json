@@ -2149,6 +2149,64 @@
                 ]
             }
         },
+        "/api/discount-product": {
+            "get": {
+                "tags": [
+                    "Products"
+                ],
+                "summary": "Lấy danh sách sản phẩm giảm giá",
+                "description": "Trả về danh sách tất cả sản phẩm có giá cuối (final_price) nhỏ hơn giá gốc (price).",
+                "operationId": "getAllProductDiscount",
+                "responses": {
+                    "200": {
+                        "description": "Lấy danh sách sản phẩm giảm giá thành công",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Lấy danh sách sản phẩm giảm giá thành công"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/ProductResource"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Lỗi server",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 500
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Đã xảy ra lỗi khi lấy danh sách sản phẩm"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/products/get8products": {
             "get": {
                 "tags": [
