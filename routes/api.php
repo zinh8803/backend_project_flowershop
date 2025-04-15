@@ -70,6 +70,7 @@ Route::get('/products/category/{category_id}', [ProductController::class, 'showB
 
 Route::get('/discounts', [DiscountController::class, 'index']);
 Route::post('/discounts', [DiscountController::class, 'store']);
+Route::get('/discounts/code={code}', [DiscountController::class, 'show']);
 Route::post('/discounts/{id}', [DiscountController::class, 'update']);
 Route::delete('/discounts/{id}', [DiscountController::class, 'destroy']);
 

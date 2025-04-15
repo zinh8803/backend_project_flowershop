@@ -527,6 +527,106 @@
                 }
             }
         },
+        "/api/discounts/code={code}": {
+            "get": {
+                "tags": [
+                    "Discounts"
+                ],
+                "summary": "Lấy thông tin chi tiết code",
+                "description": "Trả về thông tin chi tiết của một mã giảm giá",
+                "operationId": "60cbd16c99542c2537946e95f8b27897",
+                "parameters": [
+                    {
+                        "name": "code",
+                        "in": "path",
+                        "description": "Mã giảm giá cần tìm",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "SALE20"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lấy thông tin code thành công",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Lấy thông tin code thành công"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "code": {
+                                                    "type": "string",
+                                                    "example": "SALE20"
+                                                },
+                                                "type": {
+                                                    "type": "string",
+                                                    "example": "percentage"
+                                                },
+                                                "value": {
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 20
+                                                },
+                                                "start_date": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "example": "2024-03-07T14:30:00Z"
+                                                },
+                                                "end_date": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "example": "2024-04-07T14:30:00Z"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Không tìm thấy code",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 404
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Code not found"
+                                        },
+                                        "errors": {
+                                            "type": "string",
+                                            "nullable": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/discounts/{id}": {
             "post": {
                 "tags": [
@@ -1527,14 +1627,6 @@
                                     "products[0][quantity]": {
                                         "type": "integer",
                                         "example": 2
-                                    },
-                                    "products[1][product_id]": {
-                                        "type": "integer",
-                                        "example": 5
-                                    },
-                                    "products[1][quantity]": {
-                                        "type": "integer",
-                                        "example": 1
                                     }
                                 },
                                 "type": "object"

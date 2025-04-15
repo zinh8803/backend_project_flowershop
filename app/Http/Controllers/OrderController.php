@@ -60,8 +60,7 @@ class OrderController extends Controller
      *                @OA\Property(property="payment_method", type="string", example="cash"),
      *                 @OA\Property(property="products[0][product_id]", type="integer", example=3),
      *                 @OA\Property(property="products[0][quantity]", type="integer", example=2),
-     *                 @OA\Property(property="products[1][product_id]", type="integer", example=5),
-     *                 @OA\Property(property="products[1][quantity]", type="integer", example=1)
+     *                 
      *             )
      *         )
      *     ),

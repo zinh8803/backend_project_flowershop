@@ -116,9 +116,65 @@ class DiscountController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Discount $discount)
+
+ /**
+ * @OA\Get(
+ *     path="/api/discounts/code={code}",
+ *     summary="Lấy thông tin chi tiết code",
+ *     description="Trả về thông tin chi tiết của một mã giảm giá",
+ *     tags={"Discounts"},
+ *     @OA\Parameter(
+ *         name="code",
+ *         in="path",
+ *         required=true,
+ *         description="Mã giảm giá cần tìm",
+ *         @OA\Schema(type="string", example="SALE20")
+ *     ),
+ *     @OA\Response(
+ *         response=200,
+ *         description="Lấy thông tin code thành công",
+ *         @OA\JsonContent(
+ *             type="object",
+ *             @OA\Property(property="status", type="integer", example=200),
+ *             @OA\Property(property="message", type="string", example="Lấy thông tin code thành công"),
+ *             @OA\Property(property="data", type="object",
+ *                 @OA\Property(property="id", type="integer", example=1),
+ *                 @OA\Property(property="code", type="string", example="SALE20"),
+ *                 @OA\Property(property="type", type="string", example="percentage"),
+ *                 @OA\Property(property="value", type="number", format="float", example=20),
+ *                 @OA\Property(property="start_date", type="string", format="date-time", example="2024-03-07T14:30:00Z"),
+ *                 @OA\Property(property="end_date", type="string", format="date-time", example="2024-04-07T14:30:00Z")
+ *             )
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=404,
+ *         description="Không tìm thấy code",
+ *         @OA\JsonContent(
+ *             type="object",
+ *             @OA\Property(property="status", type="integer", example=404),
+ *             @OA\Property(property="message", type="string", example="Code not found"),
+ *             @OA\Property(property="errors", type="string", nullable=true)
+ *         )
+ *     )
+ * )
+ */
+
+
+    public function show($code)
     {
-        //
+        $discount = Discount::where('code',$code)->first();
+        if(!$discount){
+            return response()->json([
+                'status' => 404,
+                'message' => 'not found',
+            ],404);
+        }
+        return response()->json([
+            'status' => 200,
+            'message' => 'Discount find successfully',
+            'data' => new DiscountResource($discount)
+        ], 200);
     }
 
     /**
