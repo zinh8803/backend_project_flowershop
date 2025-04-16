@@ -8,6 +8,7 @@ use App\Models\Employee;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Laravel\Sanctum\PersonalAccessToken;
 
 class LoginController extends Controller
 {
@@ -150,14 +151,52 @@ class LoginController extends Controller
      *     )
      * )
      */
-    public function profile(Request $request)
-    {
-        return response()->json([
-            'status' => 200,
-            'message' => 'Lấy thông tin người dùng thành công',
-            'data' => new UserResource($request->user()),
-        ]);
-    }
+
+     public function profile(Request $request)
+     {
+         $accessToken = $request->bearerToken();
+     
+         if (!$accessToken) {
+             return response()->json([
+                 'status' => 401,
+                 'message' => 'Token không tồn tại',
+             ], 401);
+         }
+     
+         $token = PersonalAccessToken::findToken($accessToken);
+     
+         if (!$token) {
+             return response()->json([
+                 'status' => 401,
+                 'message' => 'Token không hợp lệ',
+             ], 401);
+         }
+     
+         $user = $token->tokenable;
+     
+         if ($user instanceof \App\Models\User) {
+             return response()->json([
+                 'status' => 200,
+                 'message' => 'Thông tin người dùng',
+                 'data' => new UserResource($user),
+             ]);
+         }
+     
+         if ($user instanceof \App\Models\Employee) {
+             return response()->json([
+                 'status' => 200,
+                 'message' => 'Thông tin nhân viên',
+                 'data' => new EmployeeResource($user),
+             ]);
+         }
+     
+         return response()->json([
+             'status' => 403,
+             'message' => 'Không xác định loại người dùng',
+         ], 403);
+     }
+
+    
 
 
 

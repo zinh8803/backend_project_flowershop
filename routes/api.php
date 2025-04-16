@@ -34,16 +34,15 @@ Route::get('/api/documentation', [SwaggerController::class, 'api'])->name('swagg
 |
 */
 
-Route::middleware(['auth:sanctum', 'check.api.token:user'])->get('user/profile', [LoginController::class, 'profile']);
+//Route::middleware(['auth:sanctum','check.api.token:Employee'])->get('user/profile', [LoginController::class, 'profile']);
+Route::get('user/profile', [LoginController::class, 'profile']);
 
 // Route::get('/user/profile', [LoginController::class, 'profile']);
 
-Route::post('/categories', [CategoryController::class, 'store']);
-Route::post('/categories/{id}', [CategoryController::class, 'update']);
-Route::delete('/categories/{id}', [CategoryController::class, 'destroy']);
+
 
 Route::middleware(['auth:sanctum', 'check.api.token:user'])->group(function () {
-    Route::get('/user/profile', [LoginController::class, 'profile']);
+ //   Route::get('/user/profile', [LoginController::class, 'profile']);
     Route::put('/users/{id}', [UserController::class, 'update']);
     Route::post('/logout', [LoginController::class, 'logout']);
 });
@@ -69,14 +68,12 @@ Route::get('/products/{id}', [ProductController::class, 'show']);
 Route::get('/products/category/{category_id}', [ProductController::class, 'showByCategory']);
 
 Route::get('/discounts', [DiscountController::class, 'index']);
-Route::post('/discounts', [DiscountController::class, 'store']);
+
 Route::get('/discounts/code={code}', [DiscountController::class, 'show']);
-Route::post('/discounts/{id}', [DiscountController::class, 'update']);
-Route::delete('/discounts/{id}', [DiscountController::class, 'destroy']);
+
 
 Route::get('product-discounts', [ProductDiscountController::class, 'index']);
-Route::post('product-discounts', [ProductDiscountController::class, 'store']);
-Route::post('product-discounts/{id}', [ProductDiscountController::class, 'update']);
+
 Route::delete('product-discounts/{id}', [ProductDiscountController::class, 'destroy']);
 
 Route::get('/Order', [OrderController::class, 'index']);
@@ -89,39 +86,52 @@ Route::delete('/Order/{id}', [OrderController::class, 'destroy']);
 
 
 
-Route::get('/schedules', [ScheduleController::class, 'index']);
-Route::post('/schedules', [ScheduleController::class, 'store']);
-Route::delete('/schedules/{id}', [ScheduleController::class, 'destroy']);
-Route::get('/employees/schedules/{employee_id}', [ScheduleController::class, 'show']);
-Route::post('/schedules/{id}', [ScheduleController::class, 'update']);
 
 
-Route::get('/positions', [PositionController::class, 'index']);
-Route::get('/positions/{id}', [PositionController::class, 'show']);
-Route::post('/positions', [PositionController::class, 'store']);
-Route::put('/positions/{id}', [PositionController::class, 'update']);
-Route::delete('/positions/{id}', [PositionController::class, 'destroy']);
 
 
-Route::post('/products', [ProductController::class, 'store']);
 Route::post('/products/{id}', [ProductController::class, 'update']);
 Route::delete('/products/{id}', [ProductController::class, 'destroy']);
 Route::middleware(['auth:sanctum','check.api.token:Employee'])->group(function () {
+    Route::post('/products', [ProductController::class, 'store']);
 
 
 
+    Route::post('/categories', [CategoryController::class, 'store']);
+    Route::post('/categories/{id}', [CategoryController::class, 'update']);
+    Route::delete('/categories/{id}', [CategoryController::class, 'destroy']);
+
+
+    Route::post('/discounts', [DiscountController::class, 'store']);
+    Route::post('/discounts/{id}', [DiscountController::class, 'update']);
+    Route::delete('/discounts/{id}', [DiscountController::class, 'destroy']);
+
+
+    Route::post('product-discounts', [ProductDiscountController::class, 'store']);
+    Route::post('product-discounts/{id}', [ProductDiscountController::class, 'update']);
+
+
+    Route::post('/employees/register', [EmployeeController::class, 'register']);    
+
+    Route::get('/employees', [EmployeeController::class, 'index']);
 
 
 
+    Route::get('/schedules', [ScheduleController::class, 'index']);
+    Route::post('/schedules', [ScheduleController::class, 'store']);
+    Route::delete('/schedules/{id}', [ScheduleController::class, 'destroy']);
+    Route::get('/employees/schedules/{employee_id}', [ScheduleController::class, 'show']);
+    Route::post('/schedules/{id}', [ScheduleController::class, 'update']);
 
 
-
-
-Route::get('/employees', [EmployeeController::class, 'index']);
-
+    Route::get('/positions', [PositionController::class, 'index']);
+    Route::get('/positions/{id}', [PositionController::class, 'show']);
+    Route::post('/positions', [PositionController::class, 'store']);
+    Route::put('/positions/{id}', [PositionController::class, 'update']);
+    Route::delete('/positions/{id}', [PositionController::class, 'destroy']);
 
 });
-Route::post('/employees/register', [EmployeeController::class, 'register']);
+
 Route::put('/employees/{id}', [EmployeeController::class, 'update']);
 
 Route::get('/invoices', [InvoiceController::class, 'index']);

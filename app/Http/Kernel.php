@@ -71,5 +71,7 @@ class Kernel extends HttpKernel
         'role' => \App\Http\Middleware\RoleMiddleware::class,
         'check.employee' => \App\Http\Middleware\CheckEmployee::class,
         'check.user' => \App\Http\Middleware\CheckUser::class,
+       // 'check.api.token.both' => \App\Http\Middleware\CheckUserOrEmployeeToken::class,
+
     ];
 }

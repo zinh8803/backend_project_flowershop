@@ -17,7 +17,7 @@ class CheckApiToken
     {
         if (!$request->user() || !$request->user()->tokenCan($scope)) {
             return response()->json([
-                'status' => 'error',
+                'status' => 'error1',
                 'message' => 'Forbidden',
             ], 403);
         }
