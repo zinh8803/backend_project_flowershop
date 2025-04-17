@@ -3607,24 +3607,13 @@
                 }
             }
         },
-        "/api/users/{id}": {
+        "/api/users/UpdateProfile": {
             "put": {
                 "tags": [
                     "users"
                 ],
                 "summary": "Cập nhật thông tin user (không bao gồm ảnh)",
-                "operationId": "b9091397c8b25f12c6adb74be6ce3a5a",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "ID của user cần cập nhật",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
+                "operationId": "a72739d6ca9f5231c67ca95b2209c5c8",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -3643,9 +3632,13 @@
                                         "format": "email",
                                         "example": "nguyenvana@example.com"
                                     },
-                                    "password": {
+                                    "address": {
                                         "type": "string",
-                                        "example": "123456"
+                                        "example": "sg"
+                                    },
+                                    "phone_number": {
+                                        "type": "string",
+                                        "example": "0123456789"
                                     }
                                 },
                                 "type": "object"
@@ -3680,24 +3673,13 @@
                 }
             }
         },
-        "/api/users/update-avatar/{id}": {
+        "/api/users/update-avatar": {
             "post": {
                 "tags": [
                     "users"
                 ],
                 "summary": "Cập nhật avatar của user",
-                "operationId": "c86064eedc663f49684a8569e90eb443",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "ID của user cần cập nhật avatar",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
+                "operationId": "72304d9f2f6903087d731324550ab2b8",
                 "requestBody": {
                     "required": true,
                     "content": {

@@ -43,8 +43,10 @@ Route::get('user/profile', [LoginController::class, 'profile']);
 
 Route::middleware(['auth:sanctum', 'check.api.token:user'])->group(function () {
  //   Route::get('/user/profile', [LoginController::class, 'profile']);
-    Route::put('/users/{id}', [UserController::class, 'update']);
-    Route::post('/logout', [LoginController::class, 'logout']);
+Route::put('/users/UpdateProfile', [UserController::class, 'update']);
+Route::post('/logout', [LoginController::class, 'logout']);
+Route::post('/users/update-avatar', [UserController::class, 'updateAvatar']);
+
 });
 
 
@@ -52,7 +54,6 @@ Route::post('/register', [UserController::class, 'register']);
 Route::post('/login', [LoginController::class, 'login']);
 
 Route::get('/users', [UserController::class, 'getAllUsers']);
-Route::post('/users/update-avatar/{id}', [UserController::class, 'updateAvatar']);
 
 Route::delete('/users/{id}', [UserController::class, 'destroy']);
 

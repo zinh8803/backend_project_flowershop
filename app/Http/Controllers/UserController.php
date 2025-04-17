@@ -159,23 +159,17 @@ class UserController extends Controller
      */
 /**
  * @OA\Put(
- *     path="/api/users/{id}",
+ *     path="/api/users/UpdateProfile",
  *     summary="Cập nhật thông tin user (không bao gồm ảnh)",
  *     tags={"users"},
- *     @OA\Parameter(
- *         name="id",
- *         in="path",
- *         required=true,
- *         @OA\Schema(type="integer"),
- *         description="ID của user cần cập nhật"
- *     ),
  *     @OA\RequestBody(
  *         required=true,
  *         @OA\JsonContent(
  *             required={ "email"},
  *             @OA\Property(property="name", type="string", example="Nguyễn Văn A"),
  *             @OA\Property(property="email", type="string", format="email", example="nguyenvana@example.com"),
- *             @OA\Property(property="password", type="string", example="123456"),
+ *               @OA\Property(property="address", type="string", example="sg"),
+ *               @OA\Property(property="phone_number", type="string", example="0123456789"),
  *         )
  *     ),
  *     @OA\Response(
@@ -189,12 +183,9 @@ class UserController extends Controller
  *     )
  * )
  */
-public function update(Request $request, $id)
+public function update(Request $request)
 {
-    $user = User::find($id);
-    if (!$user) {
-        return response()->json(['status' => 404, 'message' => 'User not found'], 404);
-    }
+    $user = $request->user(); 
 
     $validatedData = $request->validate([
         'name' => 'sometimes|required|string|max:255',
@@ -202,9 +193,8 @@ public function update(Request $request, $id)
             'sometimes',
             'required',
             'email',
-            Rule::unique('users')->ignore($id),
+            Rule::unique('users')->ignore($user->id),
         ],
-        'password' => 'sometimes|required|min:6',
         'address' => 'sometimes|nullable|string',
         'phone_number' => 'sometimes|nullable|string',
     ]);
@@ -222,18 +212,13 @@ public function update(Request $request, $id)
     ]);
 }
 
+
 /**
  * @OA\Post(
- *     path="/api/users/update-avatar/{id}",
+ *     path="/api/users/update-avatar",
  *     summary="Cập nhật avatar của user",
  *     tags={"users"},
- *     @OA\Parameter(
- *         name="id",
- *         in="path",
- *         required=true,
- *         @OA\Schema(type="integer"),
- *         description="ID của user cần cập nhật avatar"
- *     ),
+ *     
  *     @OA\RequestBody(
  *         required=true,
  *         @OA\MediaType(
@@ -255,12 +240,9 @@ public function update(Request $request, $id)
  *     )
  * )
  */
-public function updateAvatar(Request $request, $id)
+public function updateAvatar(Request $request)
 {
-    $user = User::find($id);
-    if (!$user) {
-        return response()->json(['status' => 404, 'message' => 'User not found'], 404);
-    }
+    $user = $request->user(); 
 
     $request->validate([
         'avatar' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
