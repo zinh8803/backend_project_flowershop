@@ -183,34 +183,34 @@ class UserController extends Controller
  *     )
  * )
  */
-public function update(Request $request)
-{
-    $user = $request->user(); 
+    public function update(Request $request)
+    {
+        $user = $request->user(); 
 
-    $validatedData = $request->validate([
-        'name' => 'sometimes|required|string|max:255',
-        'email' => [
-            'sometimes',
-            'required',
-            'email',
-            Rule::unique('users')->ignore($user->id),
-        ],
-        'address' => 'sometimes|nullable|string',
-        'phone_number' => 'sometimes|nullable|string',
-    ]);
+        $validatedData = $request->validate([
+            'name' => 'sometimes|required|string|max:255',
+            'email' => [
+                'sometimes',
+                'required',
+                'email',
+                Rule::unique('users')->ignore($user->id),
+            ],
+            'address' => 'sometimes|nullable|string',
+            'phone_number' => 'sometimes|nullable|string',
+        ]);
 
-    if ($request->has('password')) {
-        $validatedData['password'] = Hash::make($request->password);
+        if ($request->has('password')) {
+            $validatedData['password'] = Hash::make($request->password);
+        }
+
+        $user->update($validatedData);
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'User updated successfully',
+            'data' => new UserResource($user),
+        ]);
     }
-
-    $user->update($validatedData);
-
-    return response()->json([
-        'status' => 200,
-        'message' => 'User updated successfully',
-        'data' => new UserResource($user),
-    ]);
-}
 
 
 /**

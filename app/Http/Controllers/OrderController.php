@@ -33,6 +33,95 @@ class OrderController extends Controller
             'data' => OrderResource::collection($orders),
         ],200);
     }
+
+    /**
+     * @OA\Get(
+     *     path="/api/Order/User",
+     *     summary="Lấy danh sách đơn hàng của người dùng",
+     *     tags={"Order"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Lấy danh sách đơn hàng thành công",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="integer", example=200),
+     *             @OA\Property(property="message", type="string", example="Lấy danh sách đơn hàng của người dùng thành công"),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="array",
+     *                 @OA\Items(
+     *                     type="object",
+     *                     @OA\Property(property="id", type="integer", example=1),
+     *                     @OA\Property(property="user_id", type="integer", example=1),
+     *                     @OA\Property(property="total_price", type="number", example=500000),
+     *                     @OA\Property(property="status", type="string", example="pending"),
+     *                     @OA\Property(property="created_at", type="string", format="date-time", example="2025-04-17T10:00:00Z"),
+     *                     @OA\Property(property="updated_at", type="string", format="date-time", example="2025-04-17T10:00:00Z"),
+     *                     @OA\Property(
+     *                         property="discount",
+     *                         type="object",
+     *                         @OA\Property(property="id", type="integer", example=2),
+     *                         @OA\Property(property="code", type="string", example="SUMMER20"),
+     *                         @OA\Property(property="percent", type="integer", example=20)
+     *                     ),
+     *                     @OA\Property(
+     *                         property="order_items",
+     *                         type="array",
+     *                         @OA\Items(
+     *                             type="object",
+     *                             @OA\Property(property="id", type="integer", example=1),
+     *                             @OA\Property(property="order_id", type="integer", example=1),
+     *                             @OA\Property(property="product_id", type="integer", example=3),
+     *                             @OA\Property(property="quantity", type="integer", example=2),
+     *                             @OA\Property(
+     *                                 property="product",
+     *                                 type="object",
+     *                                 @OA\Property(property="id", type="integer", example=3),
+     *                                 @OA\Property(property="name", type="string", example="Hoa hồng đỏ"),
+     *                                 @OA\Property(property="price", type="number", example=250000),
+     *                                 @OA\Property(property="image", type="string", example="https://example.com/images/rose.jpg")
+     *                             )
+     *                         )
+     *                     )
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized - Token không hợp lệ",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="integer", example=401),
+     *             @OA\Property(property="message", type="string", example="Unauthorized - Token không hợp lệ")
+     *         )
+     *     )
+     * )
+     */
+
+
+    public function getOrderByUser(Request $request)
+    {
+        $user = $request->user();
+    
+        if (!$user) {
+            return response()->json([
+                'status' => 401,
+                'message' => 'Unauthorized - Token không hợp lệ',
+            ], 401);
+        }
+    
+        $orders = Order::with(['discount', 'orderItems.product'])
+            ->where('user_id', $user->id)
+            ->get();
+    
+        return response()->json([
+            'status' => 200,
+            'message' => 'Lấy danh sách đơn hàng của người dùng thành công',
+            'data' => OrderResource::collection($orders),
+        ]);
+    }
+    
+    
     /**
      * Show the form for creating a new resource.
      */

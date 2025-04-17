@@ -47,6 +47,9 @@ Route::put('/users/UpdateProfile', [UserController::class, 'update']);
 Route::post('/logout', [LoginController::class, 'logout']);
 Route::post('/users/update-avatar', [UserController::class, 'updateAvatar']);
 
+Route::get('/Order/User', [OrderController::class, 'getOrderByUser']);
+
+
 });
 
 
