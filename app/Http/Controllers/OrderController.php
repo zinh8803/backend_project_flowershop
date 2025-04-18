@@ -111,7 +111,7 @@ class OrderController extends Controller
         }
     
         $orders = Order::with(['discount', 'orderItems.product'])
-            ->where('user_id', $user->id)
+            ->where('user_id', $user->id)->latest()
             ->get();
     
         return response()->json([
@@ -200,7 +200,7 @@ class OrderController extends Controller
         return response()->json([
             'status' => 200,
             'message' => 'Lấy thông tin đơn hàng thành công',
-            'data' => new OrderResource($order),
+            'data' => $order,
         ],200);
 
     }
@@ -275,7 +275,16 @@ class OrderController extends Controller
         foreach ($request->products as $product) {
             $productModel = Product::find($product['product_id']);
             if (!$productModel) continue;
-    
+            if ($product['quantity'] > $productModel->stock) {
+                return response()->json([
+                    'status' => 400,
+                    'message' => "Sản phẩm '{$productModel->name}' chỉ còn {$productModel->stock} sản phẩm trong kho",
+                    'errors' => [
+                        'product_id' => $productModel->id,
+                        'available_stock' => $productModel->stock,
+                    ]
+                ], 400);
+            }
             $original_price = $productModel->price;
     
             $discount_price = $original_price;
