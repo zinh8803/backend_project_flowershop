@@ -49,8 +49,8 @@ Route::post('/users/update-avatar', [UserController::class, 'updateAvatar']);
 
 Route::get('/Order/User', [OrderController::class, 'getOrderByUser']);
 
-
 });
+Route::get('/Order/detail={id}', [OrderController::class, 'getOrderdetailById']);
 
 
 Route::post('/register', [UserController::class, 'register']);
