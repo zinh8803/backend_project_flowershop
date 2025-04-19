@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\OrderResource;
 use App\Models\Discount;
+use App\Models\Invoice;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
@@ -374,28 +375,72 @@ class OrderController extends Controller
         //
     }
 
-     /**
+    /**
      * @OA\Put(
      *     path="/api/Order/{id}/status",
      *     summary="Cập nhật trạng thái đơn hàng",
      *     tags={"Order"},
-     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
      *     @OA\RequestBody(
      *         required=true,
-     *         @OA\JsonContent(@OA\Property(property="status", type="string", example="completed"))
+     *         @OA\JsonContent(
+     *             required={"employee_id", "status"},
+     *             @OA\Property(property="employee_id", type="integer", example=1),
+     *             @OA\Property(property="status", type="string", example="completed")
+     *         )
      *     ),
-     *     @OA\Response(response=200, description="Cập nhật thành công")
+     *     @OA\Response(
+     *         response=200,
+     *         description="Cập nhật thành công",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="integer", example=200),
+     *             @OA\Property(property="message", type="string", example="Cập nhật thành công")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Không tìm thấy đơn hàng"
+     *     )
      * )
      */
+
     public function updateStatus(Request $request, $id)
     {
-        $request->validate(['status' => 'required|string']);
+        $request->validate([
+            'status' => 'required|string',
+            'employee_id' => 'required_if:status,completed|integer|exists:employees,id',
+        ]);
+    
         $order = Order::find($id);
-        if (!$order) return response()->json(['status' => 404, 'message' => 'Không tìm thấy đơn hàng'], 404);
-
+        if (!$order) {
+            return response()->json([
+                'status' => 404,
+                'message' => 'Không tìm thấy đơn hàng',
+            ], 404);
+        }
+    
         $order->update(['status' => $request->status]);
-        return response()->json(['status' => 200, 'message' => 'Cập nhật thành công'], 200);
+    
+        if ($request->status === 'completed') {
+            $invoice = Invoice::create([
+                'order_id' => $order->id,
+                'employee_id' => $request->employee_id,
+                'total_price' => $order->total_price,
+                'payment_method' => $order->payment_method,
+            ]);
+        }
+    
+        return response()->json([
+            'status' => 200,
+            'message' => 'Cập nhật thành công',
+        ]);
     }
+    
 
 
     /**

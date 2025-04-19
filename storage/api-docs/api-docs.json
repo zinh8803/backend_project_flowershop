@@ -1994,7 +1994,15 @@
                     "content": {
                         "application/json": {
                             "schema": {
+                                "required": [
+                                    "employee_id",
+                                    "status"
+                                ],
                                 "properties": {
+                                    "employee_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
                                     "status": {
                                         "type": "string",
                                         "example": "completed"
@@ -2007,7 +2015,27 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Cập nhật thành công"
+                        "description": "Cập nhật thành công",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Cập nhật thành công"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Không tìm thấy đơn hàng"
                     }
                 }
             }
