@@ -205,9 +205,7 @@ class ScheduleController extends Controller
  *         required=true,
  *         @OA\JsonContent(
  *             type="object",
- *             @OA\Property(property="start_date", type="string", format="date", example="2025-04-02"),
- *             @OA\Property(property="end_date", type="string", format="date", example="2025-04-02"),
- *             @OA\Property(property="day_of_week", type="integer", example=3),  
+ *             @OA\Property(property="start_date", type="string", format="date", example="2025-04-01"),
  *             @OA\Property(property="shift", type="string", example="afternoon"),
  *             @OA\Property(property="employee_id", type="integer", example=10)
  *         )
@@ -221,8 +219,7 @@ class ScheduleController extends Controller
  *             @OA\Property(property="message", type="string", example="Schedule updated successfully"),
  *             @OA\Property(property="data", type="object", 
  *                 @OA\Property(property="id", type="integer", example=1),
- *                 @OA\Property(property="start_date", type="string", format="date", example="2025-04-02"),
- *                 @OA\Property(property="end_date", type="string", format="date", example="2025-04-02"),
+
  *                 @OA\Property(property="day_of_week", type="integer", example=3),
  *                 @OA\Property(property="shift", type="string", example="afternoon"),
  *                 @OA\Property(property="employee_id", type="integer", example=10)
@@ -241,36 +238,40 @@ class ScheduleController extends Controller
  * )
  */
 
-    public function update(Request $request, $id)
-    {
-        $schedule = Schedule::find($id);
- 
-        if (!$schedule) {
-            return response()->json([
-                 'status' => 'error',
-                 'message' => 'Schedule not found',
-            ],404);
-        }
- 
-        $request->validate([
-            'start_date' => 'required|date',
-            'end_date' => 'required|date|after_or_equal:start_date',
-            'day_of_week' => 'required|integer|in:0,1,2,3,4,5,6',  
-            'shift' => 'required|in:morning,afternoon,full_day',  
-            'employee_id' => 'required|integer|exists:employees,id',
-        ]);
-        $schedule->start_date = $request->start_date;
-        $schedule->end_date = $request->end_date;
-        $schedule->day_of_week = Carbon::parse($request->start_date)->dayOfWeek; 
-        $schedule->shift = $request->shift;
-        $schedule->employee_id = $request->employee_id;
-        $schedule->save();
-         return response()->json([
-            'status' => 'success',
-            'message' => 'Schedule updated successfully',
-            'data' => new ScheduleResource($schedule),
-        ], 200);
+ public function update(Request $request, $id)
+{
+    $schedule = Schedule::find($id);
+
+    if (!$schedule) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Schedule not found',
+        ], 404);
     }
+
+    $request->validate([
+        'start_date' => 'required|date',
+        'shift' => 'required|in:morning,afternoon,full_day',
+        'employee_id' => 'required|integer|exists:employees,id',
+    ]);
+
+    $startDate = Carbon::parse($request->start_date);
+    $dayOfWeek = $startDate->dayOfWeek; 
+
+    $schedule->start_date = $startDate->format('Y-m-d');
+    $schedule->end_date = $startDate->format('Y-m-d');
+    $schedule->day_of_week = $dayOfWeek;
+    $schedule->shift = $request->shift;
+    $schedule->employee_id = $request->employee_id;
+    $schedule->save();
+
+    return response()->json([
+        'status' => 'success',
+        'message' => 'Schedule updated successfully',
+        'data' => new ScheduleResource($schedule),
+    ], 200);
+}
+
 
     /**
      * Remove the specified resource from storage.

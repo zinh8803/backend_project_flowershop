@@ -3640,16 +3640,7 @@
                                     "start_date": {
                                         "type": "string",
                                         "format": "date",
-                                        "example": "2025-04-02"
-                                    },
-                                    "end_date": {
-                                        "type": "string",
-                                        "format": "date",
-                                        "example": "2025-04-02"
-                                    },
-                                    "day_of_week": {
-                                        "type": "integer",
-                                        "example": 3
+                                        "example": "2025-04-01"
                                     },
                                     "shift": {
                                         "type": "string",
@@ -3685,16 +3676,6 @@
                                                 "id": {
                                                     "type": "integer",
                                                     "example": 1
-                                                },
-                                                "start_date": {
-                                                    "type": "string",
-                                                    "format": "date",
-                                                    "example": "2025-04-02"
-                                                },
-                                                "end_date": {
-                                                    "type": "string",
-                                                    "format": "date",
-                                                    "example": "2025-04-02"
                                                 },
                                                 "day_of_week": {
                                                     "type": "integer",
