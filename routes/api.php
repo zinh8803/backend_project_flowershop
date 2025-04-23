@@ -46,7 +46,7 @@ Route::middleware(['auth:sanctum', 'check.api.token:user'])->group(function () {
 Route::put('/users/UpdateProfile', [UserController::class, 'update']);
 Route::post('/logout', [LoginController::class, 'logout']);
 Route::post('/users/update-avatar', [UserController::class, 'updateAvatar']);
-
+Route::put('/users/update-password', [UserController::class, 'updatePassword']);
 Route::get('/Order/User', [OrderController::class, 'getOrderByUser']);
 
 });

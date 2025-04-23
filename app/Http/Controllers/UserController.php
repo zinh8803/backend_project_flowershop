@@ -149,10 +149,52 @@ class UserController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+   /**
+     * @OA\Put(
+     *     path="/api/users/update-password",
+     *     summary="Cập nhật mật khẩu mới cho user",
+     *     tags={"users"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"new_password"},
+     *             @OA\Property(property="new_password", type="string", format="password", example="newStrongPassword123")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Password updated successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="integer", example=200),
+     *             @OA\Property(property="message", type="string", example="Password updated successfully")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation failed",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="integer", example=422),
+     *             @OA\Property(property="errors", type="object")
+     *         )
+     *     )
+     * )
+     */
+    public function updatePassword(Request $request)
     {
-        //
+        $request->validate([
+            'new_password' => 'required|string|min:6',
+        ]);
+
+        $user = $request->user();
+        $user->password = Hash::make($request->new_password);
+        $user->save();
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'Password updated successfully',
+        ]);
     }
+
 
     /**
      * Update the specified resource in storage.
