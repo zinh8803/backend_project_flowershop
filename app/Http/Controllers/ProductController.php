@@ -5,9 +5,10 @@ namespace App\Http\Controllers;
 use App\Http\Resources\BaseResource;
 use App\Http\Resources\ProductResource;
 use App\Models\Category;
+use App\Models\Color;
 use App\Models\EmployeeProduct;
 use App\Models\Product;
-
+use App\Models\Size;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Http\Request;
 
@@ -185,6 +186,30 @@ class ProductController extends Controller
         ], 200);
     }
 
+
+
+
+
+    public function getOptions($productId)
+    {
+        $product = Product::find($productId);
+        if (!$product) {
+            return response()->json([
+                'status' => 404,
+                'message' => 'Sản phẩm không tồn tại'
+            ], 404);
+        }
+        $sizes = Size::select('id', 'name', 'price_modifier')->get();
+        $colors = Color::select('id', 'name')->get();
+
+        return response()->json([
+            'status' => 200,
+            'data' => [
+                'sizes' => $sizes,
+                'colors' => $colors
+            ]
+        ]);
+    }
 
 
     public function searchProducts(Request $request)

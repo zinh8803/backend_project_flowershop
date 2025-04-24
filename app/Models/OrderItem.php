@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class OrderItem extends Model
 {
     use HasFactory;
-    protected $fillable = ['order_id', 'product_id', 'quantity', 'price'];
+    protected $fillable = ['order_id', 'product_id', 'quantity', 'price','size_id'];
 
     public function order()
     {
@@ -22,5 +22,14 @@ class OrderItem extends Model
     public function getFinalPriceAttribute()
     {
         return $this->product->getFinalPriceAttribute();
+    }
+    public function orderItemColors()
+    {
+        return $this->hasMany(OrderItemColor::class, 'order_item_id');
+    }
+
+    public function colors()
+    {
+        return $this->belongsToMany(Color::class, 'order_item_color', 'order_item_id', 'color_id');
     }
 }

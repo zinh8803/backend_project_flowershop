@@ -27,6 +27,15 @@ class Product extends Model
     {   
     return $this->belongsToMany(Employee::class, 'employee_product');
     }
+    public function sizes()
+    {
+    return $this->belongsToMany(Size::class, 'product_size');
+    }
+
+    public function colors()
+    {
+    return $this->belongsToMany(Color::class, 'color_product');
+    }
     public function getFinalPriceAttribute()
     {
         $currentDate = now();

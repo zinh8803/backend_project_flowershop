@@ -50,6 +50,8 @@ Route::put('/users/update-password', [UserController::class, 'updatePassword']);
 Route::get('/Order/User', [OrderController::class, 'getOrderByUser']);
 
 });
+
+
 Route::get('/Order/detail={id}', [OrderController::class, 'getOrderdetailById']);
 
 
@@ -63,7 +65,7 @@ Route::delete('/users/{id}', [UserController::class, 'destroy']);
 Route::get('/categories', [CategoryController::class, 'index']);
 Route::get('/categories/{id}', [CategoryController::class, 'show']);
 
-
+Route::get('/products/{id}/options', [ProductController::class, 'getOptions']);
 Route::get('/products/search', [ProductController::class, 'searchProducts']);
 Route::get('/products', [ProductController::class, 'index']);
 Route::get('/discount-product', [ProductController::class, 'getallproductdiscount']);

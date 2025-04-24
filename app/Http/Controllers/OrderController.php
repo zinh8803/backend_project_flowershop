@@ -9,7 +9,9 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\ProductDiscount;
+use App\Models\Size;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class OrderController extends Controller
 {
@@ -215,46 +217,49 @@ class OrderController extends Controller
         //
     }
 
-    /**
+ /**
      * @OA\Post(
      *     path="/api/Order",
-     *     summary="Tạo đơn hàng",
+     *     summary="Tạo đơn hàng với size và color",
      *     tags={"Order"},
      *     @OA\RequestBody(
      *         required=true,
-     *         @OA\MediaType(
-     *             mediaType="multipart/form-data",
-     *             @OA\Schema(
-     *                 @OA\Property(property="user_id", type="integer", example=1),
-     *                 @OA\Property(property="discount_id", type="integer", nullable=true, example=2),
-     *                 @OA\Property(property="name", type="string", example="Nguyễn Văn A"),
-     *                 @OA\Property(property="email", type="string", example="nguyenvana@gmail.com"),
-     *                 @OA\Property(property="phone_number", type="string", example="0123456789"),
-     *                 @OA\Property(property="address", type="string", example="123 Đường ABC, TP.HCM"),
-     *                @OA\Property(property="payment_method", type="string", example="cash"),
-     *                 @OA\Property(property="products[0][product_id]", type="integer", example=3),
-     *                 @OA\Property(property="products[0][quantity]", type="integer", example=2),
-     *                 
+     *         @OA\JsonContent(
+     *             @OA\Property(property="user_id", type="integer", example=1),
+     *             @OA\Property(property="discount_id", type="integer", nullable=true, example=2),
+     *             @OA\Property(property="name", type="string", example="Nguyễn Văn A"),
+     *             @OA\Property(property="email", type="string", example="nguyenvana@gmail.com"),
+     *             @OA\Property(property="phone_number", type="string", example="0123456789"),
+     *             @OA\Property(property="address", type="string", example="123 Đường ABC, TP.HCM"),
+     *             @OA\Property(property="payment_method", type="string", example="cash"),
+     *             @OA\Property(
+     *                 property="products",
+     *                 type="array",
+     *                 @OA\Items(
+     *                     @OA\Property(property="product_id", type="integer", example=3),
+     *                     @OA\Property(property="quantity", type="integer", example=2),
+     *                     @OA\Property(property="size_id", type="integer", example=1),
+     *                     @OA\Property(
+     *                         property="color_ids",
+     *                         type="array",
+     *                         @OA\Items(type="integer", example=1)
+     *                     )
+     *                 )
      *             )
      *         )
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Đơn hàng được tạo thành công",
+     *         description="Tạo đơn hàng thành công",
      *         @OA\JsonContent(
      *             @OA\Property(property="status", type="integer", example=200),
      *             @OA\Property(property="message", type="string", example="Tạo đơn hàng thành công"),
      *             @OA\Property(property="data", type="object")
      *         )
      *     ),
-     *     @OA\Response(
-     *         response=422,
-     *         description="Lỗi dữ liệu đầu vào"
-     *     )
+     *     @OA\Response(response=422, description="Lỗi validate")
      * )
      */
-
-
     public function store(Request $request)
     {
         $request->validate([
@@ -263,98 +268,111 @@ class OrderController extends Controller
             'products' => 'required|array|min:1',
             'products.*.product_id' => 'required|integer|exists:products,id',
             'products.*.quantity' => 'required|integer|min:1',
+            'products.*.size_id' => 'required|integer|exists:sizes,id',
+            'products.*.color_ids' => 'required|array|min:1',
+            'products.*.color_ids.*' => 'integer|exists:colors,id',
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255',
             'phone_number' => 'required|string|max:20',
             'payment_method' => 'required|string|max:255',
             'address' => 'required|string|max:500',
         ]);
-    
-        $total_price = 0;
-        $order_items = [];
-    
-        foreach ($request->products as $product) {
-            $productModel = Product::find($product['product_id']);
-            if (!$productModel) continue;
-            if ($product['quantity'] > $productModel->stock) {
-                return response()->json([
-                    'status' => 400,
-                    'message' => "Sản phẩm '{$productModel->name}' chỉ còn {$productModel->stock} sản phẩm trong kho",
-                    'errors' => [
-                        'product_id' => $productModel->id,
-                        'available_stock' => $productModel->stock,
-                    ]
-                ], 400);
+
+        DB::beginTransaction();
+        try {
+            $total_price = 0;
+            $order_items = [];
+
+            foreach ($request->products as $product) {
+                $productModel = Product::find($product['product_id']);
+                $size = Size::find($product['size_id']);
+                $colorCount = count($product['color_ids']);
+
+                $discount_price = $productModel->price;
+                $product_discount = ProductDiscount::where('product_id', $productModel->id)
+                    ->where('start_date', '<=', now())
+                    ->where('end_date', '>=', now())
+                    ->first();
+                if ($product_discount) {
+                    $discount_price *= (1 - ($product_discount->percentage / 100));
+                }
+
+                $priceWithSize = $discount_price * (1 + ($size->price_modifier / 100));
+                $priceWithColors = $priceWithSize * (1 + ($colorCount * 5 / 100));
+                $item_total_price = $priceWithColors * $product['quantity'];
+                $total_price += $item_total_price;
+
+                $order_items[] = [
+                    'product' => $productModel,
+                    'quantity' => $product['quantity'],
+                    'final_price' => $priceWithColors,
+                    'original_price' => $productModel->price,
+                    'size_id' => $product['size_id'],
+                    'color_ids' => $product['color_ids'],
+                ];
             }
-            $original_price = $productModel->price;
-    
-            $discount_price = $original_price;
-            $product_discount = ProductDiscount::where('product_id', $productModel->id)
-                ->where('start_date', '<=', now())
-                ->where('end_date', '>=', now())
-                ->first();
-            if ($product_discount) {
-                $discount_price = $original_price * (1 - ($product_discount->percentage / 100));
-            }
-    
-            $item_total_price = $discount_price * $product['quantity'];
-            $total_price += $item_total_price;
-    
-            $order_items[] = [
-                'product_id' => $productModel->id,
-                'quantity' => $product['quantity'],
-                'price' => $original_price,
-                'final_price' => $discount_price,
-            ];
-        }
-    
-        $discountAmount = 0;
-        if ($request->discount_id) {
-            $discount = Discount::find($request->discount_id);
-            if ($discount) {
-                if ($discount->type === 'percentage') {
-                    $discountAmount = ($total_price * $discount->value) / 100;
-                } elseif ($discount->type === 'fixed') {
-                    $discountAmount = $discount->value;
+
+            $discountAmount = 0;
+            if ($request->discount_id) {
+                $discount = Discount::find($request->discount_id);
+                if ($discount) {
+                    $discountAmount = $discount->type === 'percentage'
+                        ? ($total_price * $discount->value) / 100
+                        : $discount->value;
                 }
             }
-        }
-    
-        $final_price = max(0, $total_price - $discountAmount);
-    
-        $order = Order::create([
-            'user_id' => $request->user_id,
-            'name' => $request->name,
-            'email' => $request->email,
-            'phone_number' => $request->phone_number,
-            'address' => $request->address,
-            'total_price' => $final_price,
-            'payment_method' => $request->payment_method,
-            'discount_id' => $request->discount_id,
-            'status' => 'pending',
-        ]);
-    
-        foreach ($order_items as $item) {
-            OrderItem::create([
-                'order_id' => $order->id,
-                'product_id' => $item['product_id'],
-                'quantity' => $item['quantity'],
-                'price' => $item['price'],
-                'final_price' => $item['final_price'],
+
+            $final_price = max(0, $total_price - $discountAmount);
+
+            $order = Order::create([
+                'user_id' => $request->user_id,
+                'name' => $request->name,
+                'email' => $request->email,
+                'phone_number' => $request->phone_number,
+                'address' => $request->address,
+                'total_price' => $final_price,
+                'payment_method' => $request->payment_method,
+                'discount_id' => $request->discount_id,
+                'status' => 'pending',
             ]);
-    
-            $productToUpdate = Product::find($item['product_id']);
-            if ($productToUpdate) {
-                $productToUpdate->stock -= $item['quantity'];
-                $productToUpdate->save();
+
+            foreach ($order_items as $item) {
+                $orderItem = OrderItem::create([
+                    'order_id' => $order->id,
+                    'product_id' => $item['product']->id,
+                    'quantity' => $item['quantity'],
+                    'price' => $item['original_price'],
+                    'final_price' => $item['final_price'],
+                    'size_id' => $item['size_id'],
+                ]);
+
+                foreach ($item['color_ids'] as $colorId) {
+                    DB::table('order_item_color')->insert([
+                        'order_item_id' => $orderItem->id,
+                        'color_id' => $colorId,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                }
+
+                $item['product']->decrement('stock', $item['quantity']);
             }
+
+            DB::commit();
+
+            return response()->json([
+                'status' => 200,
+                'message' => 'Tạo đơn hàng thành công',
+                'data' => new OrderResource($order),
+            ]);
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'status' => 500,
+                'message' => 'Lỗi xử lý đơn hàng',
+                'error' => $e->getMessage()
+            ], 500);
         }
-    
-        return response()->json([
-            'status' => 200,
-            'message' => 'Tạo đơn hàng thành công',
-            'data' => new OrderResource($order),
-        ], 200);
     }
  
 
