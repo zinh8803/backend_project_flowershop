@@ -287,7 +287,7 @@ class OrderController extends Controller
                 $productModel = Product::find($product['product_id']);
                 $size = Size::find($product['size_id']);
                 $colorCount = count($product['color_ids']);
-
+            
                 $discount_price = $productModel->price;
                 $product_discount = ProductDiscount::where('product_id', $productModel->id)
                     ->where('start_date', '<=', now())
@@ -296,12 +296,19 @@ class OrderController extends Controller
                 if ($product_discount) {
                     $discount_price *= (1 - ($product_discount->percentage / 100));
                 }
-
-                $priceWithSize = $discount_price * (1 + ($size->price_modifier / 100));
-                $priceWithColors = $priceWithSize * (1 + ($colorCount * 5 / 100));
+            
+                $priceWithSize = $discount_price + ($size->price_modifier);
+            
+                $additionalColorPrice = 0;
+                if ($colorCount > 1) {
+                    $additionalColorPrice = ($colorCount - 1) * 10000;
+                }
+            
+                $priceWithColors = $priceWithSize + $additionalColorPrice;
+            
                 $item_total_price = $priceWithColors * $product['quantity'];
                 $total_price += $item_total_price;
-
+            
                 $order_items[] = [
                     'product' => $productModel,
                     'quantity' => $product['quantity'],
@@ -311,6 +318,7 @@ class OrderController extends Controller
                     'color_ids' => $product['color_ids'],
                 ];
             }
+            
 
             $discountAmount = 0;
             if ($request->discount_id) {
