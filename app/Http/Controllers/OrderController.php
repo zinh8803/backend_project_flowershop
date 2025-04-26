@@ -29,7 +29,7 @@ class OrderController extends Controller
     */
     public function index()
     {
-        $orders = Order::with(['discount', 'orderItems.product'])->get();
+        $orders = Order::with(['discount', 'orderItems.product'])->get()->sortByDesc('created_at');
         return response()->json([
             'status' => 200,
             'message' => 'Lấy danh sách đơn hàng thành công',
