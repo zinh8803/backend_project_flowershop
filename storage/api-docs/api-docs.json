@@ -1047,11 +1047,6 @@
                                         "format": "email",
                                         "example": "nguyenb@example.com"
                                     },
-                                    "password": {
-                                        "type": "string",
-                                        "format": "password",
-                                        "example": "newpassword123"
-                                    },
                                     "position_id": {
                                         "type": "integer",
                                         "example": 2

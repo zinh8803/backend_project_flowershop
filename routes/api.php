@@ -139,6 +139,8 @@ Route::middleware(['auth:sanctum','check.api.token:Employee'])->group(function (
 });
 
 Route::put('/employees/{id}', [EmployeeController::class, 'update']);
+Route::delete('/employees/{id}', [EmployeeController::class, 'destroy']);
+
 
 Route::get('/invoices', [InvoiceController::class, 'index']);
 Route::get('/invoices/{id}', [InvoiceController::class, 'show']);   

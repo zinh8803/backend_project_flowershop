@@ -164,7 +164,6 @@ class EmployeeController extends Controller
      *             type="object",
      *             @OA\Property(property="name", type="string", example="Nguyen Van B"),
      *             @OA\Property(property="email", type="string", format="email", example="nguyenb@example.com"),
-     *             @OA\Property(property="password", type="string", format="password", example="newpassword123"),
      *             @OA\Property(property="position_id", type="integer", example=2),
      *             @OA\Property(property="address", type="string", example="123 Main Street"),
      *             @OA\Property(property="phone_number", type="string", example="123456789")
@@ -207,7 +206,6 @@ class EmployeeController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email',
-            'password' => 'required|string|min:6',
             'position_id' => 'required|exists:positions,id',
             'address' => 'nullable|string',
             'phone_number' => 'nullable|string',
@@ -230,8 +228,19 @@ class EmployeeController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Employee $employee)
+    public function destroy($id)
     {
-        //
+        $employee = Employee::find($id);
+        if(!$employee){
+            return response()->json([
+                'status' => 404,
+                'message' => 'Employee not found',
+            ], 404);
+        }
+        $employee->delete();
+        return response()->json([
+            'status' => 200,
+            'message' => 'Employee deleted successfully',
+        ], 200);
     }
 }
