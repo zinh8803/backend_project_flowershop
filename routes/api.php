@@ -87,9 +87,9 @@ Route::get('/Order/{id}', [OrderController::class, 'show']);
 Route::post('/Order', [OrderController::class, 'store']);
 Route::put('/Order/{id}/status', [OrderController::class, 'updateStatus']);
 Route::delete('/Order/{id}', [OrderController::class, 'destroy']);
-
-
-
+Route::get('/Order-pending',[OrderController::class, 'getOrderPending']);
+Route::get('/Order-completed',[OrderController::class, 'getOrderCompleted']);
+Route::get('/Order-processing',[OrderController::class, 'getOrderProcessing']);
 
 
 

@@ -37,6 +37,112 @@ class OrderController extends Controller
         ],200);
     }
 
+   /**
+    *    @OA\Get(
+    *     path="/api/Order-pending",
+    *     summary="Lấy danh don hang",
+    *   tags={"Order"},
+    *     @OA\Response(response=200, description="Danh sách đơn hàng đang chờ xử lý"),
+    * )
+    * 
+    */
+    public function getOrderPending()
+    {
+        $orders = Order::with(['discount', 'orderItems.product'])
+            ->where('status', 'pending')
+            ->whereNull('employee_id')
+            ->get()
+            ->sortByDesc('created_at');
+        return response()->json([
+            'status' => 200,
+            'message' => 'Lấy danh sách đơn hàng thành công',
+            'data' => OrderResource::collection($orders),
+        ], 200);
+    }
+
+
+      /**
+     * @OA\Get(
+     *     path="/api/Order-processing",
+     *     summary="Lấy danh sách đơn hàng đã đang giao theo employee_id",
+     *     tags={"Order"},
+     *     @OA\Parameter(
+     *         name="employee_id",
+     *         in="query",
+     *         description="ID của employee để lọc đơn hàng",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response=200, description="Danh sách đơn hàng đã đang giao"),
+     *     @OA\Response(response=400, description="Yêu cầu không hợp lệ (employee_id không tồn tại hoặc không hợp lệ)"),
+     * )
+     */
+    public function getOrderProcessing(Request $request)
+    {
+        $employeeId = $request->input('employee_id');
+
+        if (!is_numeric($employeeId) || $employeeId <= 0) {
+            return response()->json([
+                'status' => 400,
+                'message' => 'Employee ID không hợp lệ',
+                'data' => null,
+            ], 400);
+        }
+
+        $orders = Order::with(['discount', 'orderItems.product'])
+            ->where('status', 'processing')
+            ->where('employee_id', $employeeId)
+            ->get()
+            ->sortByDesc('created_at');
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'Lấy danh sách đơn hàng thành công',
+            'data' => OrderResource::collection($orders),
+        ], 200);
+    }
+
+
+    /**
+     * @OA\Get(
+     *     path="/api/Order-completed",
+     *     summary="Lấy danh sách đơn hàng đã hoàn thành theo employee_id",
+     *     tags={"Order"},
+     *     @OA\Parameter(
+     *         name="employee_id",
+     *         in="query",
+     *         description="ID của employee để lọc đơn hàng",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response=200, description="Danh sách đơn hàng đã hoàn thành"),
+     *     @OA\Response(response=400, description="Yêu cầu không hợp lệ (employee_id không tồn tại hoặc không hợp lệ)"),
+     * )
+     */
+    public function getOrderCompleted(Request $request)
+    {
+        $employeeId = $request->input('employee_id');
+
+        if (!is_numeric($employeeId) || $employeeId <= 0) {
+            return response()->json([
+                'status' => 400,
+                'message' => 'Employee ID không hợp lệ',
+                'data' => null,
+            ], 400);
+        }
+
+        $orders = Order::with(['discount', 'orderItems.product'])
+            ->where('status', 'completed')
+            ->where('employee_id', $employeeId)
+            ->get()
+            ->sortByDesc('created_at');
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'Lấy danh sách đơn hàng thành công',
+            'data' => OrderResource::collection($orders),
+        ], 200);
+    }
     /**
      * @OA\Get(
      *     path="/api/Order/User",
@@ -190,25 +296,28 @@ class OrderController extends Controller
      * )
      */
 
-    public function getOrderdetailById($id){
-        $order = Order::with(['discount', 'orderItems.product'])
-        ->where('id', $id)->first();
-
+     public function getOrderdetailById($id){
+        $order = Order::with([
+            'discount',
+            'orderItems.product',
+            'orderItems.orderItemColors.color'
+        ])->where('id', $id)->first();
+    
         if(!$order){
             return response()->json([
                 'status' => 404,
                 'message' => 'Không tìm thấy đơn hàng',
             ], 404);
         }
+    
         return response()->json([
             'status' => 200,
             'message' => 'Lấy thông tin đơn hàng thành công',
-            'data' => $order,
-        ],200);
-
+            'data' =>new OrderResource($order),
+        ], 200);
     }
-
     
+  
     /**
      * Show the form for creating a new resource.
      */
@@ -439,7 +548,7 @@ class OrderController extends Controller
     {
         $request->validate([
             'status' => 'required|string',
-            'employee_id' => 'required_if:status,completed|integer|exists:employees,id',
+            'employee_id' => 'required|integer|exists:employees,id',
         ]);
     
         $order = Order::find($id);
@@ -450,7 +559,12 @@ class OrderController extends Controller
             ], 404);
         }
     
-        $order->update(['status' => $request->status]);
+        $order->update([
+            'status' => $request->status,
+            'employee_id' => $request->employee_id,
+        ]);
+           
+        
     
         if ($request->status === 'completed') {
             $invoice = Invoice::create([

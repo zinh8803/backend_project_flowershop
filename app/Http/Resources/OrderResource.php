@@ -35,9 +35,11 @@ class OrderResource extends JsonResource
             ] : null,
 
             'order_items' => OrderItemResource::collection($this->whenLoaded('orderItems',
+            
                 function () {
-                    return $this->orderItems->load('orderItemColors.color');
+                    return $this->orderItems->load(['orderItemColors.color']);
                 }
+                
             )),
             
         ];

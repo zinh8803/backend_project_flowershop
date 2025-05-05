@@ -1678,6 +1678,76 @@
                 }
             }
         },
+        "/api/Order-pending": {
+            "get": {
+                "tags": [
+                    "Order"
+                ],
+                "summary": "Lấy danh don hang",
+                "operationId": "b8c00f64b8087178975b44237166fcbc",
+                "responses": {
+                    "200": {
+                        "description": "Danh sách đơn hàng đang chờ xử lý"
+                    }
+                }
+            }
+        },
+        "/api/Order-processing": {
+            "get": {
+                "tags": [
+                    "Order"
+                ],
+                "summary": "Lấy danh sách đơn hàng đã đang giao theo employee_id",
+                "operationId": "79172d69fb101d899a4ea81ba7858044",
+                "parameters": [
+                    {
+                        "name": "employee_id",
+                        "in": "query",
+                        "description": "ID của employee để lọc đơn hàng",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Danh sách đơn hàng đã đang giao"
+                    },
+                    "400": {
+                        "description": "Yêu cầu không hợp lệ (employee_id không tồn tại hoặc không hợp lệ)"
+                    }
+                }
+            }
+        },
+        "/api/Order-completed": {
+            "get": {
+                "tags": [
+                    "Order"
+                ],
+                "summary": "Lấy danh sách đơn hàng đã hoàn thành theo employee_id",
+                "operationId": "a2b86f4f390d23b75d4f8b328cd8225b",
+                "parameters": [
+                    {
+                        "name": "employee_id",
+                        "in": "query",
+                        "description": "ID của employee để lọc đơn hàng",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Danh sách đơn hàng đã hoàn thành"
+                    },
+                    "400": {
+                        "description": "Yêu cầu không hợp lệ (employee_id không tồn tại hoặc không hợp lệ)"
+                    }
+                }
+            }
+        },
         "/api/Order/User": {
             "get": {
                 "tags": [

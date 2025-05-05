@@ -21,6 +21,7 @@ class OrderItemResource extends JsonResource
             'quantity' => $this->quantity,
             'price' => $this->price, 
             'size_id' => $this->size_id,
+            'product' => new ProductResource($this->whenLoaded('product')),
            'colors' => OrderColorItemsResource::collection($this->whenLoaded('orderItemColors')),
         ];
     }
