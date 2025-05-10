@@ -74,7 +74,8 @@ Route::get('/products/{id}', [ProductController::class, 'show']);
 Route::get('/products/category/{category_id}', [ProductController::class, 'showByCategory']);
 
 Route::get('/discounts', [DiscountController::class, 'index']);
-
+Route::post('/discounts', [DiscountController::class, 'store']);
+Route::post('/discounts/check', [DiscountController::class, 'check']);
 Route::get('/discounts/code={code}', [DiscountController::class, 'show']);
 
 
@@ -108,7 +109,7 @@ Route::middleware(['auth:sanctum','check.api.token:Employee'])->group(function (
     Route::delete('/categories/{id}', [CategoryController::class, 'destroy']);
 
 
-    Route::post('/discounts', [DiscountController::class, 'store']);
+
     Route::post('/discounts/{id}', [DiscountController::class, 'update']);
     Route::delete('/discounts/{id}', [DiscountController::class, 'destroy']);
 

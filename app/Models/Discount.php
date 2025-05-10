@@ -9,17 +9,17 @@ use Illuminate\Database\Eloquent\Builder;
 class Discount extends Model
 {
     use HasFactory;
-    protected $fillable = ['code', 'type', 'value', 'start_date', 'end_date'];
+    protected $fillable = ['code', 'type', 'value','usage_count','usage_limit', 'start_date', 'end_date'];
 
     public function orders()
     {
         return $this->hasMany(Order::class);
     }
 
-    // public function products()
-    // {
-    //     return $this->belongsToMany(Product::class);
-    // }
+     public function condition()
+    {
+        return $this->hasOne(DiscountCondition::class);
+    }
     protected static function booted()
     {
     static::addGlobalScope('valid', function (Builder $builder) {

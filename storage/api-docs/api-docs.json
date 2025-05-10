@@ -384,7 +384,7 @@
                     "Discounts"
                 ],
                 "summary": "Tạo mã giảm giá mới",
-                "description": "API tạo mã giảm giá mới với thông tin chi tiết",
+                "description": "API tạo mã giảm giá mới với thông tin chi tiết và điều kiện",
                 "operationId": "9123c70fc44b58b641612d7f6f90469e",
                 "requestBody": {
                     "required": true,
@@ -425,6 +425,19 @@
                                         "type": "string",
                                         "format": "date",
                                         "example": "2025-03-20"
+                                    },
+                                    "usage_limit": {
+                                        "type": "integer",
+                                        "example": 100
+                                    },
+                                    "usage_count": {
+                                        "type": "integer",
+                                        "example": 0
+                                    },
+                                    "min_order_total": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 50
                                     }
                                 },
                                 "type": "object"
@@ -475,6 +488,25 @@
                                                     "type": "string",
                                                     "format": "date",
                                                     "example": "2025-03-20"
+                                                },
+                                                "usage_count": {
+                                                    "type": "integer",
+                                                    "example": 0
+                                                },
+                                                "usage_limit": {
+                                                    "type": "integer",
+                                                    "example": 100
+                                                },
+                                                "discount_condition": {
+                                                    "properties": {
+                                                        "min_order_total": {
+                                                            "type": "number",
+                                                            "format": "float",
+                                                            "example": 50
+                                                        }
+                                                    },
+                                                    "type": "object",
+                                                    "nullable": true
                                                 }
                                             },
                                             "type": "object"
@@ -513,6 +545,143 @@
                                                     "items": {
                                                         "type": "string",
                                                         "example": "The end date must be after start date."
+                                                    }
+                                                },
+                                                "min_order_total": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "example": "The min order total must be a number."
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/discounts/check": {
+            "post": {
+                "tags": [
+                    "Discounts"
+                ],
+                "summary": "Kiểm tra hiệu lực của mã giảm giá",
+                "description": "API để kiểm tra xem một mã giảm giá có hợp lệ để áp dụng cho đơn hàng hay không.",
+                "operationId": "15eef945e48c53cd6e8744dd8549ba14",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "code",
+                                    "order_total"
+                                ],
+                                "properties": {
+                                    "code": {
+                                        "type": "string",
+                                        "example": "SALE50"
+                                    },
+                                    "order_total": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 100
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Mã giảm giá hợp lệ",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Mã giảm giá hợp lệ"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "type": {
+                                                    "type": "string",
+                                                    "example": "percentage"
+                                                },
+                                                "value": {
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 20
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Mã giảm giá không hợp lệ",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Mã giảm giá không tồn tại"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Lỗi validate dữ liệu",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The given data was invalid."
+                                        },
+                                        "errors": {
+                                            "properties": {
+                                                "code": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "example": "The code field is required."
+                                                    }
+                                                },
+                                                "order_total": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "example": "The order total field is required."
                                                     }
                                                 }
                                             },

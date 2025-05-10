@@ -23,6 +23,11 @@ class DiscountResource extends JsonResource
             'end_date' => $this->end_date,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
+            'usage_count' => $this->usage_count,
+            'usage_limit' => $this->usage_limit,
+            'discount_condition' => [
+                'min_order_total' => $this->condition->min_order_total,
+            ],
         ];
     }
 }
