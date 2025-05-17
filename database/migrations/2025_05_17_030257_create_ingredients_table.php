@@ -11,8 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('discount_conditions', function (Blueprint $table) {
+        Schema::create('ingredients', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('product_id')->constrained()->onDelete('cascade'); // Khóa ngoại liên kết với products
+            $table->text('description')->nullable(); // Mô tả thành phần (tùy chọn)
             $table->timestamps();
         });
     }
@@ -22,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('discount_conditions');
+        Schema::dropIfExists('ingredients');
     }
 };

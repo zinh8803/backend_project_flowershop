@@ -88,7 +88,7 @@ class ProductController extends Controller
     */
     public function index()
     {
-        $products = Product::all();
+        $products = Product::with('ingredients')->get();
         
         return response()->json([
             'status' => 200,
@@ -320,8 +320,7 @@ class ProductController extends Controller
  */
     public function show($id)
     {
-        $product = Product::find($id);
-
+     $product = Product::with('ingredients')->find($id);
         if (!$product) {
             return response()->json([
                 'status' => 404,

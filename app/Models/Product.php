@@ -36,6 +36,10 @@ class Product extends Model
     {
     return $this->belongsToMany(Color::class, 'color_product');
     }
+    public function ingredients()
+    {
+        return $this->hasMany(Ingredient::class);
+    }
     public function getFinalPriceAttribute()
     {
         $currentDate = now();

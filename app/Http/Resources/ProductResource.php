@@ -45,6 +45,7 @@ class ProductResource extends JsonResource
             'is_discounted' => $this->final_price < $this->price, 
             'category_id' => $this->category_id,
             'image_url' => asset($this->image_url),
+            'ingredients' => IngredientResource::collection($this->whenLoaded('ingredients')),
         ];
     }
 }
