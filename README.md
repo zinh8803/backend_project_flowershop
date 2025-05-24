@@ -5,27 +5,27 @@
 🔹 1. Clone Repository
 
 git clone <repository-link>  
-cd <project-folder>  
+cd <project-folder>
 
 🔹 2. Cài Đặt Thư Viện
 
-composer install  
+composer install
 
 🔹 3. Cấu Hình Môi Trường
 
 📌 Đổi tên file .env.example thành .env
 
-cp .env.example .env  
+cp .env.example .env
 
 📌 Tạo khóa ứng dụng
 
-php artisan key:generate  
+php artisan key:generate
 
 🔹 4. Cấu Hình Database
 
 📌 Mở file .env và chỉnh sửa dòng sau:
 
-DB_DATABASE=ten_database_cua_ban  
+DB_DATABASE=ten_database_cua_ban
 
 cấu hình email để gửi mail
 
@@ -43,10 +43,21 @@ MAIL_FROM_NAME="Flower Shop"
 php artisan config:clear  
 php artisan cache:clear  
 php artisan config:cache  
-php artisan migrate  
+php artisan migrate
 
 🔹 6. Chạy Dự Án
 
-php artisan serve  
+php artisan serve
 
 📌 Mở trình duyệt và truy cập:🔗 http://127.0.0.1:8000
+
+---
+
+sử dụng docker
+để tải
+docker-compose up -d
+
+trong database/database có csdl lấy bỏ vào mysql đặt tên database "flower_shop"
+thực thi file
+docker exec -it laravel-app bash
+php artisan serve --host=0.0.0.0 --port=8000
