@@ -8,10 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class Ingredient extends Model
 {
     use HasFactory;
-    protected $fillable = ['product_id', 'description'];
+    protected $fillable = [ 'description'];
 
-    public function product()
+    public function products()
     {
-        return $this->belongsTo(Product::class);
+        return $this->belongsToMany(Product::class, 'product_ingredient');
     }
 }

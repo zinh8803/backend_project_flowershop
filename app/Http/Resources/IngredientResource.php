@@ -16,7 +16,6 @@ class IngredientResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'product_id' => $this->product_id,
             'description' => $this->description,
         ];
     }

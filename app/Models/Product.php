@@ -38,7 +38,7 @@ class Product extends Model
     }
     public function ingredients()
     {
-        return $this->hasMany(Ingredient::class);
+        return $this->belongsToMany(Ingredient::class, 'product_ingredient');
     }
     public function getFinalPriceAttribute()
     {
