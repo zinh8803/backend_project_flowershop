@@ -50,7 +50,9 @@ Route::put('/users/update-password', [UserController::class, 'updatePassword']);
 Route::get('/Order/User', [OrderController::class, 'getOrderByUser']);
 
 });
-
+Route::get('/ingredients', [ProductController::class, 'indexIngredients']);
+Route::post('/ingredients', [ProductController::class, 'storeIngredient']);
+Route::post('/products/{id}/ingredients', [ProductController::class, 'attachIngredients']);
 
 Route::get('/Order/detail={id}', [OrderController::class, 'getOrderdetailById']);
 

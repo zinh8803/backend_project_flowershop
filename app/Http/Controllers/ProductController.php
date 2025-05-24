@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\BaseResource;
+use App\Http\Resources\IngredientResource;
 use App\Http\Resources\ProductResource;
 use App\Models\Category;
 use App\Models\Color;
 use App\Models\EmployeeProduct;
+use App\Models\Ingredient;
 use App\Models\Product;
 use App\Models\Size;
 use Illuminate\Validation\ValidationException;
@@ -244,38 +246,103 @@ class ProductController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
-    {
-        $validatedData = $request->validate([
-            'name' => 'required|unique:products|max:255',
-            'description' => 'required',
-            'price' => 'required|numeric',
-            'stock' => 'required|numeric',
-            'category_id' => 'required|exists:categories,id',
-            'employee_id' => 'required|nullable|exists:employees,id',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', 
-        ]);
+    // public function store(Request $request)
+    // {
+    //     $validatedData = $request->validate([
+    //         'name' => 'required|unique:products|max:255',
+    //         'description' => 'required',
+    //         'price' => 'required|numeric',
+    //         'stock' => 'required|numeric',
+    //         'category_id' => 'required|exists:categories,id',
+    //         'employee_id' => 'required|nullable|exists:employees,id',
+    //         'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', 
+    //     ]);
     
-        if ($request->hasFile('image')) {
-            $image = $request->file('image');
-            $imageName = time() . '.' . $image->getClientOriginalExtension(); 
-            $image->move(public_path('assets/images'), $imageName); 
-            $validatedData['image_url'] = 'assets/images/' . $imageName; 
-        }
+    //     if ($request->hasFile('image')) {
+    //         $image = $request->file('image');
+    //         $imageName = time() . '.' . $image->getClientOriginalExtension(); 
+    //         $image->move(public_path('assets/images'), $imageName); 
+    //         $validatedData['image_url'] = 'assets/images/' . $imageName; 
+    //     }
     
-        $product = Product::create($validatedData);
-        EmployeeProduct::create([
-            'employee_id' => $request->employee_id,
-            'product_id' => $product->id,
-            'action' => 'create'
-        ]);
-        return response()->json([
-            'status' => 201,
-            'message' => 'Product created successfully',
-            'data' => new ProductResource($product)
-        ], 201);
+    //     $product = Product::create($validatedData);
+    //     EmployeeProduct::create([
+    //         'employee_id' => $request->employee_id,
+    //         'product_id' => $product->id,
+    //         'action' => 'create'
+    //     ]);
+    //     return response()->json([
+    //         'status' => 201,
+    //         'message' => 'Product created successfully',
+    //         'data' => new ProductResource($product)
+    //     ], 201);
+    // }
+    
+public function store(Request $request)
+{
+    // Validate dữ liệu sản phẩm
+    $validatedData = $request->validate([
+        'name' => 'required|unique:products|max:255',
+        'description' => 'required',
+        'price' => 'required|numeric',
+        'stock' => 'required|numeric',
+        'category_id' => 'required|exists:categories,id',
+        'employee_id' => 'required|nullable|exists:employees,id',
+        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        // Validate danh sách thành phần (nếu có)
+        'ingredients' => 'nullable|array',
+        'ingredients.*' => 'exists:ingredients,id',
+        // Validate thành phần mới (nếu có)
+        'ingredient_description' => 'nullable|string',
+    ]);
+
+    // Xử lý hình ảnh
+    if ($request->hasFile('image')) {
+        $image = $request->file('image');
+        $imageName = time() . '.' . $image->getClientOriginalExtension();
+        $image->move(public_path('assets/images'), $imageName);
+        $validatedData['image_url'] = 'http://127.0.0.1:8000/assets/images/' . $imageName;
     }
-    
+
+    // Tạo sản phẩm
+    $product = Product::create($validatedData);
+
+    // Ghi lại hành động của nhân viên
+    EmployeeProduct::create([
+        'employee_id' => $request->employee_id,
+        'product_id' => $product->id,
+        'action' => 'create',
+    ]);
+
+    // Nếu có ingredient_description, gọi storeIngredient để thêm thành phần mới
+    if ($request->has('ingredient_description') && !empty($request->input('ingredient_description'))) {
+        $ingredientData = ['description' => $request->input('ingredient_description')];
+        $ingredientRequest = new Request($ingredientData);
+        $newIngredientResponse = $this->storeIngredient($ingredientRequest);
+
+        // Lấy thành phần mới vừa tạo
+        $newIngredient = $newIngredientResponse->getData()->data;
+        $newIngredientId = $newIngredient->id;
+
+        // Thêm ID của thành phần mới vào danh sách ingredients
+        $ingredients = $request->input('ingredients', []);
+        $ingredients[] = $newIngredientId;
+    } else {
+        $ingredients = $request->input('ingredients', []);
+    }
+
+    // Liên kết các thành phần với sản phẩm (quan hệ nhiều-nhiều)
+    if (!empty($ingredients)) {
+        $product->ingredients()->attach($ingredients);
+    }
+
+    return response()->json([
+        'status' => 201,
+        'message' => 'Product created successfully',
+        'data' => new ProductResource($product->load('ingredients')), // Load quan hệ ingredients để trả về
+    ], 201);
+}
+
 
     /**
      * Display the specified resource.
@@ -335,6 +402,54 @@ class ProductController extends Controller
             'data' => new ProductResource($product),
         ], 200);
     }
+
+
+    public function indexIngredients()
+    {
+        $ingredients = Ingredient::all();
+        return response()->json([
+            'status' => 200,
+            'message' => 'Lấy danh sách thành phần thành công',
+            'data' => IngredientResource::collection($ingredients),
+        ], 200);
+    }
+
+    public function storeIngredient(Request $request)
+    {
+        $validated = $request->validate([
+            'description' => 'nullable|string',
+        ]);
+
+        $ingredient = Ingredient::create($validated);
+        return response()->json([
+            'status' => 201,
+            'message' => 'Thêm thành phần thành công',
+            'data' => new IngredientResource($ingredient),
+        ], 201);
+    }
+
+    public function attachIngredients(Request $request, $id)
+    {
+        $product = Product::find($id);
+        if (!$product) {
+            return response()->json([
+                'status' => 404,
+                'message' => 'Không tìm thấy sản phẩm',
+            ], 404);
+        }
+
+        $validated = $request->validate([
+            'ingredients' => 'required|array',
+            'ingredients.*' => 'exists:ingredients,id',
+        ]);
+
+        $product->ingredients()->sync($validated['ingredients']);
+        return response()->json([
+            'status' => 200,
+            'message' => 'Thêm thành phần vào sản phẩm thành công',
+        ], 200);
+    }
+
 
 
 /**
